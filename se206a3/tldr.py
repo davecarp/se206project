@@ -6,4 +6,4 @@ def parse_tldr(f):
     """
     for line in f:
         if line[0] == "#": continue
-        yield Word(*f.split("|"))
+        yield Word(*line.split("|"))
