@@ -1,4 +1,4 @@
-from se206project.models import Word
+from spellorama.models import Word
 
 def parse_tldr(f):
     """
