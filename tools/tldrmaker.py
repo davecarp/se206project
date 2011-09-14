@@ -14,32 +14,18 @@ class CollectionM(object):
     def __init__(self, result):
         self.result = result
 
-    def dget(self, key):
+    def get(self, key):
         """
-        If the underlying result is a dictionary, get a key from it or, if
-        unavailable, return a CollectionM encapsulating None.
-        """
-        if self.result is None:
-            result = None
-        elif not isinstance(self.result, dict):
-            result = None
-        else:
-            result = self.result.get(key)
-        return CollectionM(result)
-
-    def lget(self, index):
-        """
-        If the underlying result is a list get an index from it or, if
-        unavailable, return a CollectionM encapsulating None.
+        Get a key from the underlying collection if possible, otherwise return
+        a CollectionM encapsulating None.
         """
         if self.result is None:
             result = None
-        elif not isinstance(self.result, list):
-            result = None
-        elif index >= len(self.result):
-            result = None
         else:
-            result = self.result[index]
+            try:
+                result = self.result[key]
+            except:
+                result = None
         return CollectionM(result)
 
     def __repr__(self):
@@ -69,18 +55,18 @@ if __name__ == '__main__':
         )
 
         entriesm = CollectionM(doc) \
-            .dget('primaries').lget(0) \
-            .dget('entries').lget(1)
+            .get('primaries').get(0) \
+            .get('entries').get(1)
 
         definition = entriesm \
-            .dget('terms').lget(0) \
-            .dget('text') \
+            .get('terms').get(0) \
+            .get('text') \
             .result
 
         example = entriesm \
-            .dget('entries').lget(0) \
-            .dget('terms').lget(0) \
-            .dget('text') \
+            .get('entries').get(0) \
+            .get('terms').get(0) \
+            .get('text') \
             .result
 
         if definition is None:
