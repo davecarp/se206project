@@ -33,7 +33,7 @@ class ListEditorView(Frame):
         self.buttons_frame.pack(side=LEFT)
         buttons = ["Add", "Add All", "Remove", "Remove All"]
         for button in buttons:
-            button = Button(text=button)
+            button = Button(self.buttons_frame, text=button)
             button.pack(side=TOP)
             button['width'] = 10
             button['padx'] = 0
@@ -44,11 +44,10 @@ class ListEditorView(Frame):
 class ListViewer(Frame):
 
     def __init__(self, master):
-        self.list_view_frame = Frame(master)
-        self.list_scrollbar = Scrollbar(self.list_view_frame)
+        Frame.__init__(self, master)
+        self.list_scrollbar = Scrollbar(self)
         self.list_scrollbar.pack(side=RIGHT, fill=Y)
-        self.list_table = Listbox(self.list_view_frame, 
-                                  yscrollcommand=self.list_scrollbar.set)
+        self.list_table = Listbox(self, yscrollcommand=self.list_scrollbar.set)
         self.list_table.pack(side=LEFT, fill=BOTH)
         self.list_scrollbar.config(command=self.list_table.yview)
         for x in range(1,101):
