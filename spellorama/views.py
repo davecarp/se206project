@@ -21,39 +21,30 @@ class ListEditorView(Frame):
         # attached to it and the import button. This will then have two 
         # subframes, one for the list and scrollbar and one for the button.
         a = ListViewer(self.top_frame)
+        a.pack(side=LEFT)
         # Create a new frame which will hold the list of words, a scrollbar 
         # attached to it and the create word button. This will then have two 
         # subframes, one for the list and scrollbar and one for the button.
         b = ListViewer(self.top_frame)
+        b.pack(side=LEFT)
         # Create a new frame which will hold the buttons that allow the user 
         # to add or remove single or multiple words.
-        self.top_midright_frame = Frame(self.top_frame)
-        self.top_midright_frame.pack(side=LEFT)
-        self.add_word = Button(self.top_midright_frame, text="Add")
-        self.add_word.pack(side=TOP)
-        self.add_all_words = Button(self.top_midright_frame, text="Add All")
-        self.add_all_words.pack(side=TOP)
-        self.remove_word = Button(self.top_midright_frame, text="Remove")
-        self.remove_word.pack(side=TOP)
-        self.remove_all_words = Button(self.top_midright_frame, 
-                                       text="Remove All")
-        self.remove_all_words.pack(side=TOP)
-        list_of_buttons = [self.add_word, self.add_all_words, self.remove_word,
-                           self.remove_all_words]
-        # Set all buttons to be the same width have the same amount of padding 
-        # in the x direction so that they will line up.
-        for button in list_of_buttons:
+        self.buttons_frame = Frame(self.top_frame)
+        self.buttons_frame.pack(side=LEFT)
+        buttons = ["Add", "Add All", "Remove", "Remove All"]
+        for button in buttons:
+            button = Button(text=button)
+            button.pack(side=TOP)
             button['width'] = 10
             button['padx'] = 0
-        # Create a last frame which will hold the list of words that the .tldr 
-        # will be comprised of and the export button. There will be subfolders
+        
         c = ListViewer(self.top_frame)
+        c.pack(side=LEFT)
 
-class ListViewer(object):
+class ListViewer(Frame):
 
     def __init__(self, master):
         self.list_view_frame = Frame(master)
-        self.list_view_frame.pack(side=LEFT)
         self.list_scrollbar = Scrollbar(self.list_view_frame)
         self.list_scrollbar.pack(side=RIGHT, fill=Y)
         self.list_table = Listbox(self.list_view_frame, 
