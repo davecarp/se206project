@@ -13,7 +13,7 @@ class ListBoxModel(dict):
     def bind(self, binding):
         self.binding = binding
 
-        for k, v in self.iteritems():
+        for k, v in list(self.items()):
             # somewhat disgusting, but works relatively well
             self[k] = v
 
