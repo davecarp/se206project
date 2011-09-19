@@ -10,26 +10,19 @@ class ListEditorView(Frame):
         self.pack()
 
     def create_widgets(self):
-        # Set the two main frames. The bottom (word_properties_frame) one holds
-        # the properties of a word (i.e. meaning, context etc), and the top one
-        # holds everything else.
-        self.top_frame = Frame(self)
+        self.toolkit_frame = Frame(self)
+        self.toolkit_frame.pack(side=TOP)        
+        self.list_frame = Frame(self)
         self.word_properties_frame = Frame(self)
-        self.top_frame.pack(side=TOP)
+        self.list_frame.pack(side=TOP)
         self.word_properties_frame.pack(side=BOTTOM)
-        # Create a new frame which will hold the list of lists, a scrollbar 
-        # attached to it and the import button. This will then have two 
-        # subframes, one for the list and scrollbar and one for the button.
-        a = ListViewer(self.top_frame)
+        toolkit = ToolKit(self.toolkit_frame)
+        toolkit.pack(side=TOP)
+        a = ListViewer(self.list_frame)
         a.pack(side=LEFT)
-        # Create a new frame which will hold the list of words, a scrollbar 
-        # attached to it and the create word button. This will then have two 
-        # subframes, one for the list and scrollbar and one for the button.
-        b = ListViewer(self.top_frame)
+        b = ListViewer(self.list_frame)
         b.pack(side=LEFT)
-        # Create a new frame which will hold the buttons that allow the user 
-        # to add or remove single or multiple words.
-        self.buttons_frame = Frame(self.top_frame)
+        self.buttons_frame = Frame(self.list_frame)
         self.buttons_frame.pack(side=LEFT)
         buttons = ["Add", "Add All", "Remove", "Remove All"]
         for button in buttons:
@@ -37,9 +30,11 @@ class ListEditorView(Frame):
             button.pack(side=TOP)
             button['width'] = 10
             button['padx'] = 0
-        
-        c = ListViewer(self.top_frame)
+
+        c = ListViewer(self.list_frame)
         c.pack(side=LEFT)
+        w = Label(self.word_properties_frame, text="WORD PROPERTIES GO HERE")
+        w.pack()
 
 class ListViewer(Frame):
 
@@ -52,6 +47,16 @@ class ListViewer(Frame):
         self.list_scrollbar.config(command=self.list_table.yview)
         for x in range(1,101):
             self.list_table.insert(END, x)
+
+class ToolKit(Frame):
+
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        for x in ["Import List", "Create New Word", "Create Random List",
+                  "Export List"]:
+            x = Button(self, text=x)
+            x.pack(side=LEFT)
+            x['width'] = 18
         
 
 root = Tk()
