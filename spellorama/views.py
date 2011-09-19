@@ -20,42 +20,11 @@ class ListEditorView(Frame):
         # Create a new frame which will hold the list of lists, a scrollbar 
         # attached to it and the import button. This will then have two 
         # subframes, one for the list and scrollbar and one for the button.
-        self.top_left_frame = Frame(self.top_frame)
-        self.top_left_frame.pack(side=LEFT)
-        self.left_list_frame = Frame(self.top_left_frame)
-        self.left_list_frame.pack(side=TOP)
-        self.left_button_frame = Frame(self.top_left_frame)
-        self.left_button_frame.pack(side=BOTTOM)                
-        self.lol_scrollbar = Scrollbar(self.left_list_frame)
-        self.lol_scrollbar.pack(side=RIGHT, fill=Y)
-        self.list_of_lists = Listbox(self.left_list_frame,
-                                     yscrollcommand=self.lol_scrollbar.set)
-        self.list_of_lists.pack(side=LEFT, fill=BOTH)
-        for x in range(1,101):
-            self.list_of_lists.insert(END, x)
-        self.lol_scrollbar.config(command=self.list_of_lists.yview)
-        self.import_button = Button(self.left_button_frame, text="Import...")
-        self.import_button.pack(side=BOTTOM)
+        a = ListViewer(self.top_frame)
         # Create a new frame which will hold the list of words, a scrollbar 
         # attached to it and the create word button. This will then have two 
         # subframes, one for the list and scrollbar and one for the button.
-        self.top_midleft_frame = Frame(self.top_frame)
-        self.top_midleft_frame.pack(side=LEFT)
-        self.midleft_list_frame = Frame(self.top_midleft_frame)
-        self.midleft_list_frame.pack(side=TOP)
-        self.midleft_button_frame = Frame(self.top_midleft_frame)
-        self.midleft_button_frame.pack(side=BOTTOM)
-        self.low_scrollbar = Scrollbar(self.midleft_list_frame)
-        self.low_scrollbar.pack(side=RIGHT, fill=Y)
-        self.list_of_words = Listbox(self.midleft_list_frame,
-                                     yscrollcommand=self.low_scrollbar.set)
-        self.list_of_words.pack(side=LEFT, fill=BOTH)
-        for x in range(1,101):
-            self.list_of_words.insert(END, x)
-        self.low_scrollbar.config(command=self.list_of_words.yview)
-        self.createword_button = Button(self.midleft_button_frame, 
-                                        text="Create New Word")
-        self.createword_button.pack()
+        b = ListViewer(self.top_frame)
         # Create a new frame which will hold the buttons that allow the user 
         # to add or remove single or multiple words.
         self.top_midright_frame = Frame(self.top_frame)
@@ -78,22 +47,21 @@ class ListEditorView(Frame):
             button['padx'] = 0
         # Create a last frame which will hold the list of words that the .tldr 
         # will be comprised of and the export button. There will be subfolders
-        self.top_right_frame = Frame(self.top_frame)
-        self.top_right_frame.pack(side=LEFT)
-        self.tldr_list_frame = Frame(self.top_right_frame)
-        self.tldr_list_frame.pack(side=TOP)
-        self.export_button_frame = Frame(self.top_right_frame)
-        self.export_button_frame.pack(side=BOTTOM)
-        self.tldr_scrollbar = Scrollbar(self.tldr_list_frame)
-        self.tldr_scrollbar.pack(side=RIGHT, fill=Y)
-        self.tldr_list = Listbox(self.tldr_list_frame,
-                                 yscrollcommand=self.tldr_scrollbar.set)
-        self.tldr_list.pack(side=LEFT, fill=BOTH)
-        for x in range (1,101):
-            self.tldr_list.insert(END, x)
-        self.tldr_scrollbar.config(command=self.tldr_list.yview)
-        self.export_button = Button(self.export_button_frame, text="Export")
-        self.export_button.pack()
+        c = ListViewer(self.top_frame)
+
+class ListViewer(object):
+
+    def __init__(self, master):
+        self.list_view_frame = Frame(master)
+        self.list_view_frame.pack(side=LEFT)
+        self.list_scrollbar = Scrollbar(self.list_view_frame)
+        self.list_scrollbar.pack(side=RIGHT, fill=Y)
+        self.list_table = Listbox(self.list_view_frame, 
+                                  yscrollcommand=self.list_scrollbar.set)
+        self.list_table.pack(side=LEFT, fill=BOTH)
+        self.list_scrollbar.config(command=self.list_table.yview)
+        for x in range(1,101):
+            self.list_table.insert(END, x)
         
 
 root = Tk()
