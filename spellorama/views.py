@@ -156,9 +156,17 @@ class WordPropertiesWidget(Frame):
         self.difficulty_label = Label(self, text="")
         self.difficulty_label.grid(row=3, column=1, sticky=W)
 
-class ListEditorView(PanedWindow):
+class ToolkitWidget(Frame):
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        for x in ["Import List", "Create New Word", "Create Random List",
+                  "Export List"]:
+            x = Button(self, text=x)
+            x.pack(side=LEFT, fill=X, expand=True)
+
+class ListEditorView(Frame):
     def __init__(self, master=None):
-        PanedWindow.__init__(self, master, orient=VERTICAL, sashrelief=SUNKEN)
+        Frame.__init__(self, master)
         self.pack()
         self.create_widgets()
 
@@ -173,11 +181,17 @@ class ListEditorView(PanedWindow):
         # Set the two main frames. The bottom (word_properties_frame) one holds
         # the properties of a word (i.e. meaning, context etc), and the top one
         # holds everything else.
-        self.top_pane = PanedWindow(self, orient=HORIZONTAL, sashrelief=SUNKEN)
-        self.word_properties = WordPropertiesWidget(self)
+        self.toolkit = ToolkitWidget(self)
+        self.pane = PanedWindow(self, orient=VERTICAL, sashrelief=SUNKEN)
 
-        self.add(self.top_pane, stretch="always")
-        self.add(self.word_properties, stretch="never")
+        self.toolkit.pack(side=TOP, fill=X)
+        self.pane.pack(side=TOP, fill=BOTH, expand=True)
+
+        self.top_pane = PanedWindow(self.pane, orient=HORIZONTAL, sashrelief=SUNKEN)
+        self.word_properties = WordPropertiesWidget(self.pane)
+
+        self.pane.add(self.top_pane, stretch="always")
+        self.pane.add(self.word_properties, stretch="never")
 
     def _on_center_list_select(self, e):
         selection = e.widget.curselection()
