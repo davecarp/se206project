@@ -154,12 +154,12 @@ class ToolkitWidget(Frame):
 
     def create_widgets(self):
         self.import_button = Button(self, text="Import List")
-        self.create_button = Button(self, text="Create New Word")
-        self.random_button = Button(self, text="Create Random List")
         self.export_button = Button(self, text="Export List")
+        self.create_button = Button(self, text="Create New Word")
+        self.random_button = Button(self, text="Create Random List")        
 
-        for x in [ self.import_button, self.create_button, self.random_button,
-                   self.export_button ]:
+        for x in [ self.import_button, self.export_button,
+                   self.create_button, self.random_button ]:
             x.pack(side=LEFT, fill=X, expand=True)
 
 class ListEditorView(Frame):

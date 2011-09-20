@@ -1,5 +1,6 @@
 from Tkinter import *
 
+import operator
 import random
 import logging
 
@@ -7,8 +8,59 @@ import tkFileDialog
 import tkMessageBox
 import tkSimpleDialog
 
+from spellorama.models import Word
 from spellorama.views import ListEditorView
 from spellorama.tldr import parse_tldr, gen_tldr
+
+class AddWordDialog(Toplevel):
+    def __init__(self, master=None):
+        Toplevel.__init__(self, master)
+        self.word = None
+        self.title("Add New Word")
+        self.create_widgets()
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
+        self.grab_set()
+        self.wait_window(self)
+
+    def done(self):
+        if self.word_entry.get():
+            self.word = Word(self.word_entry.get(),
+                             self.definition_entry.get(),
+                             self.example_entry.get(),
+                             self.difficulty_entry.get())
+        self.destroy()
+
+    def create_widgets(self):
+        self.resizable(0, 0)
+
+        for i, label_text in enumerate([ "Word", "Definition", "Example",
+                                         "Difficulty "]):
+            label = Label(self, text=label_text)
+            label.grid(row=i, column=0, padx=5, pady=5, sticky=W)
+
+        self.word_entry = Entry(self)
+        self.word_entry.grid(row=0, column=1, padx=5, pady=5)
+
+        self.definition_entry = Entry(self)
+        self.definition_entry.grid(row=1, column=1, padx=5, pady=5)
+
+        self.difficulty_entry = Entry(self)
+        self.difficulty_entry.grid(row=2, column=1, padx=5, pady=5)
+
+        self.example_entry = Entry(self)
+        self.example_entry.grid(row=3, column=1, padx=5, pady=5)
+
+        frame = Frame(self)
+        frame.grid(row=4, column=0, columnspan=2)
+
+        self.ok_button = Button(frame, text="OK", command=self.done)
+        self.ok_button.pack(side=LEFT)
+
+        self.cancel_button = Button(frame, text="Cancel", command=self.destroy)
+        self.cancel_button.pack(side=LEFT, padx=5, pady=5)
+
+def new_word_prompt():
+    return AddWordDialog().word
 
 class ListEditorController(object):
     def __init__(self, view):
@@ -22,11 +74,20 @@ class ListEditorController(object):
                 self.view.center_list.model[word.word] = word
         self.refresh_transfer_strip()
 
-    def on_word_list_select(self, e):
+    def on_center_list_select(self, e):
         selection = e.widget.curselection()
         if selection:
             self.view.word_properties.display(
                 [ self.view.center_list.model.get_value_by_index(int(i))
+                  for i in selection ]
+            )
+        self.refresh_transfer_strip()
+
+    def on_right_list_select(self, e):
+        selection = e.widget.curselection()
+        if selection:
+            self.view.word_properties.display(
+                [ self.view.right_list.model.get_value_by_index(int(i))
                   for i in selection ]
             )
         self.refresh_transfer_strip()
@@ -76,7 +137,9 @@ class ListEditorController(object):
                 self.view.left_list.model[filename] = data
 
     def on_create_button(self):
-        pass
+        word = new_word_prompt()
+        if word is not None:
+            self.view.right_list.model[word.word] = word
 
     def on_random_button(self):
         num = tkSimpleDialog.askinteger("Generate Random List",
@@ -97,7 +160,8 @@ class ListEditorController(object):
 
         try:
             with open(filename, "w") as f:
-                for line in gen_tldr(list(self.view.right_list.model.values())):
+                for line in gen_tldr(sorted(list(self.view.right_list.model.values()),
+                                            key=operator.attrgetter("word"))):
                     f.write(line)
         except IOError as e:
             tkMessageBox.showwarning(
@@ -139,10 +203,10 @@ class ListEditorController(object):
                                     self.on_left_list_select)
 
         view.center_list.listbox.bind("<<ListboxSelect>>",
-                                      self.on_word_list_select)
+                                      self.on_center_list_select)
 
         view.right_list.listbox.bind("<<ListboxSelect>>",
-                                     self.on_word_list_select)
+                                     self.on_right_list_select)
 
         view.toolkit.import_button['command'] = self.on_import_button
         view.toolkit.create_button['command'] = self.on_create_button
