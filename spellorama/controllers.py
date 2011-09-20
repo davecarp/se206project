@@ -83,6 +83,7 @@ class ListEditorController(object):
         if isinstance(filenames, basestring):
             # winblows...?
             filenames = filenames[1:-1].split("} {")
+            if filenames[0] == '': filenames = []
 
         for filename in filenames:
             try:
