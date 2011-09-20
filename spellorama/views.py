@@ -127,7 +127,7 @@ class WordListWidget(Frame):
         self.listbox = Listbox(self.list_frame,
                                yscrollcommand=self.scrollbar.set,
                                exportselection=False,
-                               selectmode=MULTIPLE)
+                               selectmode=EXTENDED)
         self.listbox.pack(side=LEFT, fill=BOTH, expand=True)
 
         self.scrollbar.config(command=self.listbox.yview)

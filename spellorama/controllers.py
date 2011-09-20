@@ -97,6 +97,7 @@ class ListEditorController(object):
         word = new_word_prompt()
         if word is not None:
             self.view.right_list.model[word.word] = word
+        self.refresh_transfer_strip()
 
     def on_random_button(self):
         num = tkSimpleDialog.askinteger("Generate Random List",
@@ -110,6 +111,7 @@ class ListEditorController(object):
             word = words.pop()
             self.view.right_list.model[word.word] = word
             num -= 1
+        self.refresh_transfer_strip()
 
     def on_export_button(self):
         filename = tkFileDialog.asksaveasfilename(filetypes=[("Word List", ".tldr")])
