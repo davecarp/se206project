@@ -1,5 +1,65 @@
 from Tkinter import *
 
+from spellorama.models import Word
+
+class AddWordDialog(Toplevel):
+    def __init__(self, master=None):
+        Toplevel.__init__(self, master)
+        self.word = None
+        self.title("Add New Word")
+        self.create_widgets()
+        self.word_entry.focus()
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
+        self.grab_set()
+        self.wait_window(self)
+
+    def done(self):
+        if self.word_entry.get():
+            self.word = Word(self.word_entry.get(),
+                             self.definition_entry.get(),
+                             self.example_entry.get(),
+                             self.difficulty_entry.get())
+        self.destroy()
+
+    def create_widgets(self):
+        self.resizable(0, 0)
+
+        for i, label_text in enumerate([ "Word", "Definition", "Example",
+                                         "Difficulty "]):
+            label = Label(self, text=label_text)
+            label.grid(row=i, column=0, padx=5, pady=5, sticky=W)
+
+        self.word_entry = Entry(self)
+        self.word_entry.grid(row=0, column=1, padx=5, pady=5)
+        self.word_entry.bind("<Return>", lambda _: self.done)
+
+        self.definition_entry = Entry(self)
+        self.definition_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.definition_entry.bind("<Return>", lambda _: self.done)
+
+        self.example_entry = Entry(self)
+        self.example_entry.grid(row=2, column=1, padx=5, pady=5)
+        self.example_entry.bind("<Return>", lambda _: self.done)
+
+        self.difficulty_entry = StringVar("")
+
+        difficulty_menu = OptionMenu(self, self.difficulty_entry,
+                                     "", "CL1", "CL2", "CL3", "CL4", "CL5",
+                                     "CL6", "CL7", "CL8", "AL1", "AL2")
+        difficulty_menu.grid(row=3, column=1, padx=5, pady=5, sticky=W)
+
+        frame = Frame(self)
+        frame.grid(row=4, column=0, columnspan=2)
+
+        self.ok_button = Button(frame, text="OK", command=self.done)
+        self.ok_button.pack(side=LEFT)
+
+        self.cancel_button = Button(frame, text="Cancel", command=self.destroy)
+        self.cancel_button.pack(side=LEFT, padx=5, pady=5)
+
+def new_word_prompt():
+    return AddWordDialog().word
+
 class ListBoxModel(dict):
     def __init__(self, *args, **kwargs):
         self.binding = None
@@ -138,13 +198,16 @@ class WordPropertiesWidget(Frame):
             label.grid(row=i + 1, column=0, sticky=W)
 
         self.definition_label = Label(self, text="")
-        self.definition_label.grid(row=1, column=1, sticky=W)
+        self.definition_label.grid(row=1, column=1, columnspan=2, sticky=W)
 
         self.example_label = Label(self, text="")
-        self.example_label.grid(row=2, column=1, sticky=W)
+        self.example_label.grid(row=2, column=1, columnspan=2, sticky=W)
 
         self.difficulty_label = Label(self, text="")
-        self.difficulty_label.grid(row=3, column=1, sticky=W)
+        self.difficulty_label.grid(row=3, column=1, columnspan=2, sticky=W)
+
+        self.speak_button = Button(self, text="Speak")
+        self.speak_button.grid(row=0, column=2, sticky=E)
 
 class ToolkitWidget(Frame):
     def __init__(self, master):
@@ -185,7 +248,8 @@ class ListEditorView(Frame):
         self.toolkit.pack(side=TOP, fill=X)
         self.pane.pack(side=TOP, fill=BOTH, expand=True)
 
-        self.top_pane = PanedWindow(self.pane, orient=HORIZONTAL, sashrelief=SUNKEN)
+        self.top_pane = PanedWindow(self.pane, orient=HORIZONTAL,
+                                    sashrelief=SUNKEN)
         self.word_properties = WordPropertiesWidget(self.pane)
 
         self.pane.add(self.top_pane, stretch="always")
@@ -209,7 +273,7 @@ class ListEditorView(Frame):
     def create_right_list(self):
         self.right_list = WordListWidget(ListBoxModel(), self.top_pane,
                                          text="Selected Words")
-        self.top_pane.add(self.right_list, stretch="always", padx=5)
+        self.top_pane.add(self.right_list, stretch="always", padx=5)  
 
 if __name__ == '__main__':
     root = Tk()

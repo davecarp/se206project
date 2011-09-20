@@ -8,62 +8,14 @@ import tkFileDialog
 import tkMessageBox
 import tkSimpleDialog
 
-from spellorama.models import Word
-from spellorama.views import ListEditorView
+from spellorama.views import ListEditorView, new_word_prompt
+from spellorama.tts import Festival
 from spellorama.tldr import parse_tldr, gen_tldr
-
-class AddWordDialog(Toplevel):
-    def __init__(self, master=None):
-        Toplevel.__init__(self, master)
-        self.word = None
-        self.title("Add New Word")
-        self.create_widgets()
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
-        self.grab_set()
-        self.wait_window(self)
-
-    def done(self):
-        if self.word_entry.get():
-            self.word = Word(self.word_entry.get(),
-                             self.definition_entry.get(),
-                             self.example_entry.get(),
-                             self.difficulty_entry.get())
-        self.destroy()
-
-    def create_widgets(self):
-        self.resizable(0, 0)
-
-        for i, label_text in enumerate([ "Word", "Definition", "Example",
-                                         "Difficulty "]):
-            label = Label(self, text=label_text)
-            label.grid(row=i, column=0, padx=5, pady=5, sticky=W)
-
-        self.word_entry = Entry(self)
-        self.word_entry.grid(row=0, column=1, padx=5, pady=5)
-
-        self.definition_entry = Entry(self)
-        self.definition_entry.grid(row=1, column=1, padx=5, pady=5)
-
-        self.difficulty_entry = Entry(self)
-        self.difficulty_entry.grid(row=2, column=1, padx=5, pady=5)
-
-        self.example_entry = Entry(self)
-        self.example_entry.grid(row=3, column=1, padx=5, pady=5)
-
-        frame = Frame(self)
-        frame.grid(row=4, column=0, columnspan=2)
-
-        self.ok_button = Button(frame, text="OK", command=self.done)
-        self.ok_button.pack(side=LEFT)
-
-        self.cancel_button = Button(frame, text="Cancel", command=self.destroy)
-        self.cancel_button.pack(side=LEFT, padx=5, pady=5)
-
-def new_word_prompt():
-    return AddWordDialog().word
 
 class ListEditorController(object):
     def __init__(self, view):
+        self.tts = Festival()
+        self.tts.start()
         self.bind(view)
 
     def on_left_list_select(self, e):
@@ -116,8 +68,13 @@ class ListEditorController(object):
         self.view.right_list.model.clear()
         self.refresh_transfer_strip()
 
+    def on_speak_button(self):
+        self.tts.panic()
+        self.tts.speak(". ".join(word.word
+                                for word in self.view.word_properties.model))
+
     def on_import_button(self):
-        for filename in tkFileDialog.askopenfilenames():
+        for filename in tkFileDialog.askopenfilenames(filetypes=[("Word List", ".tldr")]):
             try:
                 with open(filename, "r") as f:
                     data = list(parse_tldr(f))
@@ -155,7 +112,7 @@ class ListEditorController(object):
             num -= 1
 
     def on_export_button(self):
-        filename = tkFileDialog.asksaveasfilename()
+        filename = tkFileDialog.asksaveasfilename(filetypes=[("Word List", ".tldr")])
         if not filename: return
 
         try:
@@ -218,10 +175,4 @@ class ListEditorController(object):
         view.transfer_strip.remove_button['command'] = self.on_remove_button
         view.transfer_strip.remove_all_button['command'] = self.on_remove_all_button
 
-if __name__ == '__main__':
-    root = Tk()
-    view = ListEditorView(master=root)
-    controller = ListEditorController(view)
-    view.pack(fill=BOTH, expand=True)
-    root.mainloop()
-
+        view.word_properties.speak_button['command'] = self.on_speak_button
