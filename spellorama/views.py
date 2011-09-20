@@ -1,8 +1,4 @@
-# http://effbot.org/tkinterbook/+
 from Tkinter import *
-
-from spellorama.tldr import parse_tldr, gen_tldr
-from spellorama.models import Word
 
 class ListBoxModel(dict):
     def __init__(self, *args, **kwargs):
@@ -17,8 +13,11 @@ class ListBoxModel(dict):
             # somewhat disgusting, but works relatively well
             self[k] = v
 
-    def get_by_index(self, index):
+    def get_value_by_index(self, index):
         return self[self._ordering[index]]
+
+    def get_key_by_index(self, index):
+        return self._ordering[index]
 
     def __setitem__(self, key, value):
         if self.binding is not None:
@@ -78,32 +77,24 @@ class TransferStripWidget(Frame):
         Frame.__init__(self, master)
         self.pack()
         self.create_widgets()
-        self.disable()
 
     def create_widgets(self):
         # Create a new frame which will hold the buttons that allow the user 
         # to add or remove single or multiple words.
-        self.add_word = Button(self, text=">")
-        self.add_all_words = Button(self, text=">>")
-        self.remove_word = Button(self, text="<")
-        self.remove_all_words = Button(self, text="<<")
+        self.add_button = Button(self, text=">")
+        self.add_all_button = Button(self, text=">>")
+        self.remove_button = Button(self, text="<")
+        self.remove_all_button = Button(self, text="<<")
 
-        self.buttons = [ self.add_word, self.add_all_words, self.remove_word,
-                       self.remove_all_words ]
+        self.buttons = [ self.add_button, self.add_all_button,
+                         self.remove_button, self.remove_all_button ]
 
         # Set all buttons to be the same width have the same amount of padding 
         # in the x direction so that they will line up.
         for button in self.buttons:
             button['width'] = 5
             button.pack(side=TOP, pady=5)
-
-    def enable(self):
-        for button in self.buttons:
-            button["state"] = NORMAL
-
-    def disable(self):
-        for button in self.buttons:
-            button["state"] = DISABLED
+            button['state'] = DISABLED
 
 class WordPropertiesWidget(Frame):
     def __init__(self, master=None):
@@ -133,7 +124,6 @@ class WordPropertiesWidget(Frame):
             self.definition_label['text'] = ""
             self.example_label['text'] = ""
             self.difficulty_label['text'] = ""
-            
 
     def create_widgets(self):
         self.word_label = Label(self, text="",
@@ -159,9 +149,17 @@ class WordPropertiesWidget(Frame):
 class ToolkitWidget(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        for x in ["Import List", "Create New Word", "Create Random List",
-                  "Export List"]:
-            x = Button(self, text=x)
+        self.pack()
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.import_button = Button(self, text="Import List")
+        self.create_button = Button(self, text="Create New Word")
+        self.random_button = Button(self, text="Create Random List")
+        self.export_button = Button(self, text="Export List")
+
+        for x in [ self.import_button, self.create_button, self.random_button,
+                   self.export_button ]:
             x.pack(side=LEFT, fill=X, expand=True)
 
 class ListEditorView(Frame):
@@ -193,35 +191,14 @@ class ListEditorView(Frame):
         self.pane.add(self.top_pane, stretch="always")
         self.pane.add(self.word_properties, stretch="never")
 
-    def _on_center_list_select(self, e):
-        selection = e.widget.curselection()
-        if selection:
-            self.transfer_strip.enable()
-            self.word_properties.display(
-                [ self.center_list.model.get_by_index(int(i)) for i in selection ]
-            )
-        else:
-            self.transfer_strip.disable()
-
-    def _on_left_list_select(self, e):
-        self.center_list.model.clear()
-
-        for selection in e.widget.curselection():
-            for word in self.left_list.model.get_by_index(int(selection)):
-                self.center_list.model[word.word] = word
-
     def create_left_list(self):
         self.left_list = WordListWidget(ListBoxModel(), self.top_pane,
                                         text="Word Lists")
         self.top_pane.add(self.left_list, stretch="always", padx=5)
-        self.left_list.listbox.bind("<<ListboxSelect>>",
-                                    self._on_left_list_select)
 
     def create_center_list(self):
         self.center_list = WordListWidget(ListBoxModel(), self.top_pane,
                                           text="Words in List")
-        self.center_list.listbox.bind("<<ListboxSelect>>",
-                                      self._on_center_list_select)
         self.top_pane.add(self.center_list, stretch="always", padx=5)
 
     def create_transfer_buttons(self):

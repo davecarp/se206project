@@ -9,7 +9,9 @@ def parse_tldr(f):
     test
     """
     for line in f:
+        line = line.strip()
         if line[0] == "#": continue
+        if not line: continue
         yield Word.deserialize(line)
 
 def gen_tldr(words):
@@ -21,7 +23,7 @@ def gen_tldr(words):
     test|testing|he tests|easy
     """
     for word in words:
-        yield word.serialize()
+        yield word.serialize() + "\n"
 
 if __name__ == "__main__":
     import doctest
