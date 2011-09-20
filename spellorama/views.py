@@ -60,7 +60,7 @@ class AddWordDialog(Toplevel):
 def new_word_prompt():
     return AddWordDialog().word
 
-class ListBoxModel(dict):
+class AssociativeListBoxStore(dict):
     def __init__(self, *args, **kwargs):
         self.binding = None
         self._ordering = []
@@ -83,7 +83,7 @@ class ListBoxModel(dict):
         if self.binding is not None:
             if key not in self:
                 self._ordering.append(key)
-                self.binding.insert(len(self._ordering), key)
+                self.binding.insert(END, key)
 
         dict.__setitem__(self, key, value)
 
@@ -186,10 +186,12 @@ class WordPropertiesWidget(Frame):
             self.difficulty_label['text'] = ""
 
     def create_widgets(self):
-        self.word_label = Label(self, text="",
-                                font="TkDefaultFont 14 bold")
+        self.word_frame = Frame(self)
+        self.word_frame.grid(row=0, column=0, columnspan=3, sticky=W + E)
 
-        self.word_label.grid(row=0, column=0, columnspan=2, sticky=W)
+        self.word_label = Label(self.word_frame, text="",
+                                font="TkDefaultFont 14 bold")
+        self.word_label.pack(side=LEFT, fill=X, expand=True)
 
         for i, label_text in enumerate([ "Definition", "Example",
                                          "Difficulty" ]):
@@ -198,16 +200,19 @@ class WordPropertiesWidget(Frame):
             label.grid(row=i + 1, column=0, sticky=W)
 
         self.definition_label = Label(self, text="")
-        self.definition_label.grid(row=1, column=1, columnspan=2, sticky=W)
+        self.definition_label.grid(row=1, column=1, sticky=W)
 
         self.example_label = Label(self, text="")
-        self.example_label.grid(row=2, column=1, columnspan=2, sticky=W)
+        self.example_label.grid(row=2, column=1, sticky=W)
 
         self.difficulty_label = Label(self, text="")
-        self.difficulty_label.grid(row=3, column=1, columnspan=2, sticky=W)
+        self.difficulty_label.grid(row=3, column=1, sticky=W)
 
-        self.speak_button = Button(self, text="Speak")
-        self.speak_button.grid(row=0, column=2, sticky=E)
+        self.speak_button = Button(self.word_frame, text=u"\u25b6", bg="green")
+        self.speak_button.pack(side=LEFT)
+
+        self.panic_button = Button(self.word_frame, text=u"\u25a0", bg="red")
+        self.panic_button.pack(side=LEFT)
 
 class ToolkitWidget(Frame):
     def __init__(self, master):
@@ -216,13 +221,15 @@ class ToolkitWidget(Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        self.manage_button = Button(self, text="Manage Students")
         self.import_button = Button(self, text="Import List")
         self.export_button = Button(self, text="Export List")
         self.create_button = Button(self, text="Create New Word")
         self.random_button = Button(self, text="Create Random List")        
 
-        for x in [ self.import_button, self.export_button,
-                   self.create_button, self.random_button ]:
+        for x in [ self.manage_button, self.import_button,
+                   self.export_button, self.create_button,
+                   self.random_button ]:
             x.pack(side=LEFT, fill=X, expand=True)
 
 class ListEditorView(Frame):
@@ -256,12 +263,14 @@ class ListEditorView(Frame):
         self.pane.add(self.word_properties, stretch="never")
 
     def create_left_list(self):
-        self.left_list = WordListWidget(ListBoxModel(), self.top_pane,
+        self.left_list = WordListWidget(AssociativeListBoxStore(),
+                                        self.top_pane,
                                         text="Word Lists")
         self.top_pane.add(self.left_list, stretch="always", padx=5)
 
     def create_center_list(self):
-        self.center_list = WordListWidget(ListBoxModel(), self.top_pane,
+        self.center_list = WordListWidget(AssociativeListBoxStore(),
+                                          self.top_pane,
                                           text="Words in List")
         self.top_pane.add(self.center_list, stretch="always", padx=5)
 
@@ -271,9 +280,10 @@ class ListEditorView(Frame):
                           sticky=W + E)
 
     def create_right_list(self):
-        self.right_list = WordListWidget(ListBoxModel(), self.top_pane,
+        self.right_list = WordListWidget(AssociativeListBoxStore(),
+                                         self.top_pane,
                                          text="Selected Words")
-        self.top_pane.add(self.right_list, stretch="always", padx=5)  
+        self.top_pane.add(self.right_list, stretch="always", padx=5)
 
 if __name__ == '__main__':
     root = Tk()

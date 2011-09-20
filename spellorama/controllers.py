@@ -18,16 +18,18 @@ class ListEditorController(object):
         self.tts.start()
         self.bind(view)
 
-    def on_left_list_select(self, e):
+    def on_left_list_select(self):
         self.view.center_list.model.clear()
 
-        for selection in e.widget.curselection():
+        for selection in self.view.left_list.listbox.curselection():
             for word in self.view.left_list.model.get_value_by_index(int(selection)):
                 self.view.center_list.model[word.word] = word
+        self.view.center_list.listbox.select_set(0, END)
+        self.on_center_list_select()
         self.refresh_transfer_strip()
 
-    def on_center_list_select(self, e):
-        selection = e.widget.curselection()
+    def on_center_list_select(self):
+        selection = self.view.center_list.listbox.curselection()
         if selection:
             self.view.word_properties.display(
                 [ self.view.center_list.model.get_value_by_index(int(i))
@@ -35,8 +37,8 @@ class ListEditorController(object):
             )
         self.refresh_transfer_strip()
 
-    def on_right_list_select(self, e):
-        selection = e.widget.curselection()
+    def on_right_list_select(self):
+        selection = self.view.right_list.listbox.curselection()
         if selection:
             self.view.word_properties.display(
                 [ self.view.right_list.model.get_value_by_index(int(i))
@@ -73,8 +75,16 @@ class ListEditorController(object):
         self.tts.speak(". ".join(word.word
                                 for word in self.view.word_properties.model))
 
+    def on_panic_button(self):
+        self.tts.panic()
+
     def on_import_button(self):
-        for filename in tkFileDialog.askopenfilenames(filetypes=[("Word List", ".tldr")]):
+        filenames = tkFileDialog.askopenfilenames(filetypes=[("Word List", ".tldr")])
+        if isinstance(filenames, basestring):
+            # winblows...?
+            filenames = filenames[1:-1].split("} {")
+
+        for filename in filenames:
             try:
                 with open(filename, "r") as f:
                     data = list(parse_tldr(f))
@@ -159,13 +169,13 @@ class ListEditorController(object):
         self.view = view
 
         view.left_list.listbox.bind("<<ListboxSelect>>",
-                                    self.on_left_list_select)
+                                    lambda _: self.on_left_list_select())
 
         view.center_list.listbox.bind("<<ListboxSelect>>",
-                                      self.on_center_list_select)
+                                      lambda _: self.on_center_list_select())
 
         view.right_list.listbox.bind("<<ListboxSelect>>",
-                                     self.on_right_list_select)
+                                     lambda _: self.on_right_list_select())
 
         view.toolkit.import_button['command'] = self.on_import_button
         view.toolkit.create_button['command'] = self.on_create_button
@@ -178,3 +188,4 @@ class ListEditorController(object):
         view.transfer_strip.remove_all_button['command'] = self.on_remove_all_button
 
         view.word_properties.speak_button['command'] = self.on_speak_button
+        view.word_properties.panic_button['command'] = self.on_panic_button
