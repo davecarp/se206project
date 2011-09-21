@@ -31,7 +31,6 @@ class ListEditorController(object):
     def on_center_list_select(self):
         if self.view.center_list.model or self.view.right_list.model:
             self.selection = self.view.center_list.listbox.curselection()
-            print len(selection) ##### REMOVE THIS ASAP!!!! ######
             if selection:
                 self.view.word_properties.display(
                     [ self.view.center_list.model.get_value_by_index(int(i))
@@ -45,7 +44,6 @@ class ListEditorController(object):
     def on_right_list_select(self):
         if self.view.center_list.model or self.view.right_list.model:
             selection = self.view.right_list.listbox.curselection()
-            print len(selection)
             if selection:
                 self.view.word_properties.display(
                     [ self.view.right_list.model.get_value_by_index(int(i))
