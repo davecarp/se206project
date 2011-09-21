@@ -145,16 +145,20 @@ class TransferStripWidget(Frame):
         self.add_all_button = Button(self, text=">>")
         self.remove_button = Button(self, text="<")
         self.remove_all_button = Button(self, text="<<")
+        self.create_random_button = Button(self, text="Generate\nRandom List")
 
         self.buttons = [ self.add_button, self.add_all_button,
-                         self.remove_button, self.remove_all_button ]
+                         self.remove_button, self.remove_all_button,
+                         self.create_random_button ]
 
         # Set all buttons to be the same width have the same amount of padding 
         # in the x direction so that they will line up.
         for button in self.buttons:
-            button['width'] = 5
+            button['width'] = 11
             button.pack(side=TOP, pady=5)
             button['state'] = DISABLED
+
+        self.create_random_button['state'] = ACTIVE
 
 class WordPropertiesWidget(Frame):
     def __init__(self, master=None):
@@ -224,12 +228,10 @@ class ToolkitWidget(Frame):
         self.manage_button = Button(self, text="Manage Students")
         self.import_button = Button(self, text="Import List")
         self.export_button = Button(self, text="Export List")
-        self.create_button = Button(self, text="Create New Word")
-        self.random_button = Button(self, text="Create Random List")        
+        self.create_button = Button(self, text="Create New Word")        
 
         for x in [ self.manage_button, self.import_button,
-                   self.export_button, self.create_button,
-                   self.random_button ]:
+                   self.export_button, self.create_button ]:
             x.pack(side=LEFT, fill=X, expand=True)
 
 class ListEditorView(Frame):

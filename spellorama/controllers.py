@@ -180,13 +180,13 @@ class ListEditorController(object):
 
         view.toolkit.import_button['command'] = self.on_import_button
         view.toolkit.create_button['command'] = self.on_create_button
-        view.toolkit.random_button['command'] = self.on_random_button
         view.toolkit.export_button['command'] = self.on_export_button
 
         view.transfer_strip.add_button['command'] = self.on_add_button
         view.transfer_strip.add_all_button['command'] = self.on_add_all_button
         view.transfer_strip.remove_button['command'] = self.on_remove_button
         view.transfer_strip.remove_all_button['command'] = self.on_remove_all_button
+        view.transfer_strip.create_random_button['command'] = self.on_random_button
 
         view.word_properties.speak_button['command'] = self.on_speak_button
         view.word_properties.panic_button['command'] = self.on_panic_button
