@@ -181,7 +181,7 @@ class ListEditorController(object):
                                     lambda _: self.on_left_list_select())
 
         view.center_list.listbox.bind("<<ListboxSelect>>",
-                                      lambda _: self.on_center_list_select(y))
+                                      lambda _: self.on_center_list_select())
 
         view.right_list.listbox.bind("<<ListboxSelect>>",
                                      lambda _: self.on_right_list_select())
