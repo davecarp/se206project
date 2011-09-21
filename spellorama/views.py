@@ -193,7 +193,7 @@ class WordPropertiesWidget(Frame):
 
         self.word_label = Label(self.word_frame, text="",
                                 font="TkDefaultFont 14 bold")
-        self.word_label.pack(side=LEFT, fill=X, expand=True)
+        self.word_label.pack(side=LEFT)
 
         for i, label_text in enumerate([ "Definition", "Example",
                                          "Difficulty" ]):

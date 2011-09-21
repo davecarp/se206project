@@ -1,5 +1,6 @@
 from Tkinter import *
 
+import os
 import operator
 import random
 import logging
@@ -17,6 +18,7 @@ class ListEditorController(object):
         self.tts = Festival()
         self.tts.start()
         self.bind(view)
+        self.populate()
 
     def on_left_list_select(self):
         self.view.center_list.model.clear()
@@ -108,7 +110,7 @@ class ListEditorController(object):
                 )
                 logging.warn(e)
             else:
-                self.view.left_list.model[filename] = data
+                self.view.left_list.model[os.path.relpath(filename)] = data
 
     def on_create_button(self):
         word = new_word_prompt()
@@ -150,6 +152,20 @@ class ListEditorController(object):
             "Export",
             "Exported successfully to {0}".format(filename)
         )
+
+    def populate(self):
+        if not os.path.isdir("presets"): return
+
+        for filename in os.listdir("presets"):
+            if filename.endswith(".tldr"):
+                path = os.path.join("presets", filename)
+                try:
+                    with open(path, "r") as f:
+                        data = list(parse_tldr(f))
+                except Exception as e:
+                    logging.warn(e)
+                else:
+                    self.view.left_list.model[os.path.relpath(path)] = data
 
     def refresh_transfer_strip(self):
         if self.view.center_list.model:
