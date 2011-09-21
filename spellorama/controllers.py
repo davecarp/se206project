@@ -157,7 +157,7 @@ class ListEditorController(object):
         if not os.path.isdir("presets"): return
 
         for filename in os.listdir("presets"):
-            if filename.endswith(".tldr"):
+            if filename.rsplit(".", 1)[-1] == "tldr":
                 path = os.path.join("presets", filename)
                 try:
                     with open(path, "r") as f:
