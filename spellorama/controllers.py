@@ -90,10 +90,6 @@ class ListEditorController(object):
 
     def on_import_button(self):
         filenames = tkFileDialog.askopenfilenames(filetypes=[("Word List", ".tldr")])
-        if isinstance(filenames, basestring):
-            # winblows...?
-            filenames = filenames[1:-1].split("} {")
-            if filenames[0] == '': filenames = []
 
         for filename in filenames:
             try:
@@ -185,7 +181,7 @@ class ListEditorController(object):
                                     lambda _: self.on_left_list_select())
 
         view.center_list.listbox.bind("<<ListboxSelect>>",
-                                      lambda _: self.on_center_list_select())
+                                      lambda _: self.on_center_list_select(y))
 
         view.right_list.listbox.bind("<<ListboxSelect>>",
                                      lambda _: self.on_right_list_select())
