@@ -143,13 +143,13 @@ class TransferStripWidget(Frame):
         # to add or remove single or multiple words.
         self.add_button = Button(self, text=">")
         self.add_all_button = Button(self, text=">>")
+        self.create_random_button = Button(self, text="Generate\nRandom List")
         self.remove_button = Button(self, text="<")
         self.remove_all_button = Button(self, text="<<")
-        self.create_random_button = Button(self, text="Generate\nRandom List")
 
         self.buttons = [ self.add_button, self.add_all_button,
-                         self.remove_button, self.remove_all_button,
-                         self.create_random_button ]
+                         self.create_random_button, self.remove_button,
+                         self.remove_all_button ]
 
         # Set all buttons to be the same width have the same amount of padding 
         # in the x direction so that they will line up.
@@ -157,8 +157,6 @@ class TransferStripWidget(Frame):
             button['width'] = 11
             button.pack(side=TOP, pady=5)
             button['state'] = DISABLED
-
-        self.create_random_button['state'] = ACTIVE
 
 class WordPropertiesWidget(Frame):
     def __init__(self, master=None):

@@ -148,8 +148,10 @@ class ListEditorController(object):
     def refresh_transfer_strip(self):
         if self.view.center_list.model:
             self.view.transfer_strip.add_all_button['state'] = NORMAL
+            self.view.transfer_strip.create_random_button['state'] = NORMAL
         else:
             self.view.transfer_strip.add_all_button['state'] = DISABLED
+            self.view.transfer_strip.create_random_button['state'] = DISABLED
 
         if self.view.right_list.model:
             self.view.transfer_strip.remove_all_button['state'] = NORMAL
