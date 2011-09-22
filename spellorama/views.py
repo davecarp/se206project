@@ -3,6 +3,9 @@ from Tkinter import *
 from spellorama.models import Word
 
 class AddWordDialog(Toplevel):
+    """
+    A dialog box used to create new words.
+    """
     def __init__(self, master=None):
         Toplevel.__init__(self, master)
         self.word = None
@@ -14,6 +17,10 @@ class AddWordDialog(Toplevel):
         self.wait_window(self)
 
     def done(self):
+        """
+        Called when the OK button is pressed -- creates a Word if possible,
+        otherwise returns None.
+        """
         if self.word_entry.get():
             self.word = Word(self.word_entry.get(),
                              self.definition_entry.get(),
@@ -22,6 +29,9 @@ class AddWordDialog(Toplevel):
         self.destroy()
 
     def create_widgets(self):
+        """
+        Create widgets to populate the window.
+        """
         self.resizable(0, 0)
 
         for i, label_text in enumerate([ "Word", "Definition", "Example",
@@ -58,15 +68,26 @@ class AddWordDialog(Toplevel):
         self.cancel_button.pack(side=LEFT, padx=5, pady=5)
 
 def new_word_prompt():
+    """
+    Convenient method for adding words and getting the word returned.
+    """
     return AddWordDialog().word
 
 class AssociativeListBoxStore(dict):
+    """
+    A backing store for a Listbox that is represented as a dictionary -- the
+    keys are the items in the list and the values can be retrieved from the
+    store.
+    """
     def __init__(self, *args, **kwargs):
         self.binding = None
         self._ordering = []
         dict.__init__(self, *args, **kwargs)
 
     def bind(self, binding):
+        """
+        Bind a Listbox to the store.
+        """
         self.binding = binding
 
         for k, v in list(self.items()):
@@ -74,12 +95,22 @@ class AssociativeListBoxStore(dict):
             self[k] = v
 
     def get_value_by_index(self, index):
+        """
+        Get a value by ordering index.
+        """
         return self[self._ordering[index]]
 
     def get_key_by_index(self, index):
+        """
+        Get a key by ordering index.
+        """
         return self._ordering[index]
 
     def __setitem__(self, key, value):
+        """
+        Override for __setitem__ that adds an entry in the ordering list if
+        required.
+        """
         if self.binding is not None:
             if key not in self:
                 self._ordering.append(key)
@@ -88,6 +119,9 @@ class AssociativeListBoxStore(dict):
         dict.__setitem__(self, key, value)
 
     def __delitem__(self, key):
+        """
+        Override for __delitem__ that updates the ordering list.
+        """
         # lookup + delete from the ordering list is O(n), but it's better than
         # reordering a dictionary after every delete
         if self.binding is not None:
@@ -99,11 +133,17 @@ class AssociativeListBoxStore(dict):
         dict.__delitem__(self, key)
 
     def clear(self):
+        """
+        Override for clear that empties the ordering list.
+        """
         self._ordering = []
         self.binding.delete(0, END)
         dict.clear(self)
 
 class WordListWidget(Frame):
+    """
+    A scrollable Listbox widget for storing words.
+    """
     def __init__(self, model, master=None, text=None):
         Frame.__init__(self, master)
         self.text = text
@@ -114,6 +154,9 @@ class WordListWidget(Frame):
         self.model.bind(self.listbox)
 
     def create_widgets(self):
+        """
+        Populate with widgets.
+        """
         if self.text is not None:
             self.label = Label(self, text=self.text, relief=SUNKEN)
             self.label.pack(side=TOP, fill=X)
@@ -133,14 +176,19 @@ class WordListWidget(Frame):
         self.scrollbar.config(command=self.listbox.yview)
 
 class TransferStripWidget(Frame):
+    """
+    A widget with add, add all, add random, remove and remove all buttons.
+    """
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
         self.create_widgets()
 
     def create_widgets(self):
-        # Create a new frame which will hold the buttons that allow the user 
-        # to add or remove single or multiple words.
+        """
+        Create a new frame which will hold the buttons that allow the user to
+        add or remove single or multiple words.
+        """
         self.add_button = Button(self, text=">")
         self.add_all_button = Button(self, text=">>")
         self.create_random_button = Button(self, text="Generate\nRandom List")
@@ -159,6 +207,10 @@ class TransferStripWidget(Frame):
             button['state'] = DISABLED
 
 class WordPropertiesWidget(Frame):
+    """
+    A widget used to display the details of a word.
+    """
+
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
@@ -166,6 +218,9 @@ class WordPropertiesWidget(Frame):
         self.display([])
 
     def display(self, words):
+        """
+        Display a given word.
+        """
         self.model = words
 
         if len(words) == 0:
@@ -188,6 +243,9 @@ class WordPropertiesWidget(Frame):
             self.difficulty_label['text'] = ""
 
     def create_widgets(self):
+        """
+        Populate with widgets.
+        """
         self.word_frame = Frame(self)
         self.word_frame.grid(row=0, column=0, columnspan=3, sticky=W + E)
 
@@ -217,12 +275,18 @@ class WordPropertiesWidget(Frame):
         self.panic_button.pack(side=LEFT)
 
 class ToolkitWidget(Frame):
+    """
+    Toolbar widget.
+    """
     def __init__(self, master):
         Frame.__init__(self, master)
         self.pack()
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Populate with toobar buttons.
+        """
         self.manage_button = Button(self, text="Manage Students")
         self.import_button = Button(self, text="Import List")
         self.export_button = Button(self, text="Export List")
@@ -233,12 +297,18 @@ class ToolkitWidget(Frame):
             x.pack(side=LEFT, fill=X, expand=True)
 
 class ListEditorView(Frame):
+    """
+    Main widget for the Teacher list editor view.
+    """
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.pack()
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Create the elements of the Teacher list editor.
+        """
         self.create_root_frames()
         self.create_left_list()
         self.create_center_list()
@@ -246,9 +316,11 @@ class ListEditorView(Frame):
         self.create_right_list()
 
     def create_root_frames(self):
-        # Set the two main frames. The bottom (word_properties_frame) one holds
-        # the properties of a word (i.e. meaning, context etc), and the top one
-        # holds everything else.
+        """
+        Set the two main frames. The bottom (word_properties_frame) one holds
+        the properties of a word (i.e. meaning, context etc), and the top one
+        holds everything else.
+        """
         self.toolkit = ToolkitWidget(self)
         self.pane = PanedWindow(self, orient=VERTICAL, sashrelief=SUNKEN)
 
@@ -263,23 +335,35 @@ class ListEditorView(Frame):
         self.pane.add(self.word_properties, stretch="never")
 
     def create_left_list(self):
+        """
+        Create the left list.
+        """
         self.left_list = WordListWidget(AssociativeListBoxStore(),
                                         self.top_pane,
                                         text="Word Lists")
         self.top_pane.add(self.left_list, stretch="always", padx=5)
 
     def create_center_list(self):
+        """
+        Create the center list.
+        """
         self.center_list = WordListWidget(AssociativeListBoxStore(),
                                           self.top_pane,
                                           text="Words in List")
         self.top_pane.add(self.center_list, stretch="always", padx=5)
 
     def create_transfer_buttons(self):
+        """
+        Create the buttons between the center and right list.
+        """
         self.transfer_strip = TransferStripWidget(self.top_pane)
         self.top_pane.add(self.transfer_strip, stretch="never", padx=5,
                           sticky=W + E)
 
     def create_right_list(self):
+        """
+        Create the right list.
+        """
         self.right_list = WordListWidget(AssociativeListBoxStore(),
                                          self.top_pane,
                                          text="Selected Words")
