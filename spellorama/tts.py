@@ -2,6 +2,7 @@ import os
 import multiprocessing
 import signal
 import subprocess
+import tkMessageBox
 
 class FestivalSlave(multiprocessing.Process):
     """
@@ -23,6 +24,17 @@ class FestivalSlave(multiprocessing.Process):
             proc.stdin.close()
 
 class Festival(object):
+    def __init__(self):
+        try:
+            proc = subprocess.Popen([ "festival", "--version" ],
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE).communicate()
+        except OSError:
+            tkMessageBox.showwarning(
+                "Could not initialize TTS",
+                "Festival TTS support may not be available on your system."
+            )
+
     def start(self):
         """
         Start the Festival connector.

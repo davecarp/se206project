@@ -1,5 +1,16 @@
 from spellorama.models import Word
 
+class ParserError(Exception):
+    """
+    Parser exception class.
+    """
+    def __init__(self, lineno, exc):
+        self.lineno = lineno
+        self.exc = exc
+
+    def __str__(self):
+        return "line {0}: {1}".format(self.lineno, self.exc)
+
 def parse_tldr(f):
     """
     Generative TLDR iterable parser (it works on lists too).
@@ -8,11 +19,15 @@ def parse_tldr(f):
     ...     print word.word
     test
     """
-    for line in f:
+    for i, line in enumerate(f):
         line = line.strip()
         if line[0] == "#": continue
         if not line: continue
-        yield Word.deserialize(line)
+
+        try:
+            yield Word.deserialize(line)
+        except Exception as e:
+            raise ParserError(i + 1, e)
 
 def gen_tldr(words):
     """
