@@ -14,15 +14,22 @@ from spellorama.tts import Festival
 from spellorama.tldr import parse_tldr, gen_tldr
 
 class ListEditorController(object):
+    """ This class specifies the behavior for the ListEditor int the teacher
+    interface. """
+
     def __init__(self, view):
+        """ Initialisation method. Starts festival, binds this class to the
+        ListEditor and then populates its list of lists with the pre-specified 
+        lists. """
         self.tts = Festival()
         self.tts.start()
         self.bind(view)
         self.populate()
 
     def on_left_list_select(self):
+        """ Method called when words are selected in the left list containing
+        .tldr files that can be read from. """
         self.view.center_list.model.clear()
-
         for selection in self.view.left_list.listbox.curselection():
             for word in self.view.left_list.model.get_value_by_index(int(selection)):
                 self.view.center_list.model[word.word] = word
@@ -31,6 +38,8 @@ class ListEditorController(object):
         self.refresh_transfer_strip()
 
     def on_center_list_select(self):
+        """ Method called when words are selected in the center list containing 
+        words in the currently selected .tldr file(s). """
         if self.view.center_list.model or self.view.right_list.model:
             selection = self.view.center_list.listbox.curselection()
             if selection:
@@ -44,6 +53,8 @@ class ListEditorController(object):
         
 
     def on_right_list_select(self):
+        """ Method called when words are selected in the right list containing 
+        words in the list that the teacher is building. """
         if self.view.center_list.model or self.view.right_list.model:
             selection = self.view.right_list.listbox.curselection()
             if selection:
@@ -56,6 +67,8 @@ class ListEditorController(object):
             self.view.word_properties.display([])
 
     def on_add_button(self):
+        """ Method called when the add button in the TransferStripWidget is
+        clicked. """
         selection = self.view.center_list.listbox.curselection()
         for index in selection:
             key = self.view.center_list.model.get_key_by_index(int(index))
@@ -64,11 +77,15 @@ class ListEditorController(object):
         self.refresh_transfer_strip()
 
     def on_add_all_button(self):
+        """ Method called when the add all button in the TransferStripWidget is 
+        clicked. """
         for k, v in self.view.center_list.model.iteritems():
             self.view.right_list.model[k] = v
         self.refresh_transfer_strip()
 
     def on_remove_button(self):
+        """ Method called when the remove button in the TransferStripWidget is
+        clicked. """
         selection = self.view.right_list.listbox.curselection()
         for index in selection:
             key = self.view.right_list.model.get_key_by_index(int(index))
@@ -77,19 +94,24 @@ class ListEditorController(object):
         self.on_center_list_select()
 
     def on_remove_all_button(self):
+        """ Method called when the remove all button in the TransferStripWidget 
+        is clicked. """
         self.view.right_list.model.clear()
         self.refresh_transfer_strip()
         self.on_center_list_select()
 
     def on_speak_button(self):
+        """ Method called when the play button is pressed. """
         self.tts.panic()
         self.tts.speak(". ".join(word.word
                                 for word in self.view.word_properties.model))
 
     def on_panic_button(self):
+        """ Method called when the stop button is pressed. """
         self.tts.panic()
 
     def on_import_button(self):
+        """ Method called when the import button in the toolbar is pressed. """
         filenames = tkFileDialog.askopenfilenames(filetypes=[("Word List", ".tldr")])
 
         for filename in filenames:
@@ -112,12 +134,16 @@ class ListEditorController(object):
                 self.view.left_list.model[os.path.relpath(filename)] = data
 
     def on_create_button(self):
+        """ Method called when the create new word button in the toolbar is
+        pressed. """
         word = new_word_prompt()
         if word is not None:
             self.view.right_list.model[word.word] = word
         self.refresh_transfer_strip()
 
     def on_random_button(self):
+        """ Method called when the create random list button in the
+        TransferStripWidget is pressed. """ 
         num = tkSimpleDialog.askinteger("Generate Random List",
                                         "How many items should the list have?")
         if not num: return
@@ -132,6 +158,7 @@ class ListEditorController(object):
         self.refresh_transfer_strip()
 
     def on_export_button(self):
+        """ Method called when the export button in the toolbar is pressed. """
         filename = tkFileDialog.asksaveasfilename(filetypes=[("Word List", ".tldr")])
         if not filename: return
 
@@ -158,6 +185,8 @@ class ListEditorController(object):
         )
 
     def populate(self):
+        """ Populates the list of lists with the files that are specified to be 
+        in there from start up. """
         if not os.path.isdir("presets"): return
 
         for filename in os.listdir("presets"):
@@ -172,6 +201,9 @@ class ListEditorController(object):
                     self.view.left_list.model[os.path.relpath(path)] = data
 
     def refresh_transfer_strip(self):
+        """ Method called by all methods invoked when there are words added 
+        to or removed from the list being built. Includes tests to see if the 
+        buttons in the TransferStripWidget should be active or not. """
         if self.view.center_list.model:
             self.view.transfer_strip.add_all_button['state'] = NORMAL
             self.view.transfer_strip.create_random_button['state'] = NORMAL
@@ -195,6 +227,7 @@ class ListEditorController(object):
             self.view.transfer_strip.remove_button['state'] = DISABLED
 
     def bind(self, view):
+        """ Bind behaviours to views.py. """
         self.view = view
 
         view.left_list.listbox.bind("<<ListboxSelect>>",
