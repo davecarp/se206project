@@ -28,7 +28,10 @@ class Word(object):
         >>> w.difficulty
         'easy'
         """
-        return cls(*form.split("|"))
+        row = list(form.split("|"))
+        if len(row) == 3:
+            row.insert(1, "")
+        return cls(*row)
 
     def serialize(self):
         """
