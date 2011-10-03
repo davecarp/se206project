@@ -1,7 +1,8 @@
 from Tkinter import *
+import time
 
 from spellorama.models import Word
-
+  
 class AddWordDialog(Toplevel):
     """
     A dialog box used to create new words.

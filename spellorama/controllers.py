@@ -13,6 +13,7 @@ from spellorama.views import ListEditorView, new_word_prompt
 from spellorama.tts import Festival
 from spellorama.tldr import parse_tldr, gen_tldr
 
+
 class ListEditorController(object):
     """ This class specifies the behavior for the ListEditor int the teacher
     interface. """
