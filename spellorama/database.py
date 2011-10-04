@@ -12,11 +12,15 @@ def create_tables():
     """ Sets up the database for the first run. """  
 
     # Create users table
-    sql("""create table users ( "id" integer primary key,
-                                "name" varchar(30),
+    sql("""create table users ( "name" varchar(30),
                                 "username" varchar(30),
                                 "password" varchar(96)
                                 );""")
+    
+    # Create account type tables
+    sql("""create table accounttypes ( "username" varchar(30),
+                                       "type" varchar(30)
+                                       );""")
 
 def username_exists(username):
     """Tests to see if a given string exists as a username. """
@@ -31,12 +35,21 @@ def get_hashedpw(username):
     ls = sql("""select "password" from users where "username"=?""", (username,));
     return ls
 
-def create_user(name, username, hashedpw):
+def create_user(name, username, account_type, hashedpw):
     """ Inserts a user into the users table. """
 
     sql("""insert into users("name", "username", "password") values
-           (?, ?, ?, ?)""", (name, username, hashedpw))
+           (?, ?, ?)""", (name, username, hashedpw))
+
+    sql("""insert into accounttypes("username", "type") values (?, ?)""", (username, account_type))
+
     db.commit()
+
+def get_account_type(username):
+    """ Gets account type for a given username. """
+    
+    ls = sql("""select type from accounttypes where "username"=?""", (username,))
+    return ls[0][0]
       
 
 

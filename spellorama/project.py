@@ -59,8 +59,13 @@ class LoginScreen(Frame):
                                      "or Username incorrect. Please try again")
             return
         if hasher.test_hash(password, database.get_hashedpw(username)[0][0]):
-            print "Login Successful"
             self.destroy()
+            if database.get_account_type(username) == "student":
+                print "Logging in as student"
+                #### START STUDENT INTERFACE ####
+            else:
+                print "Logging in as teacher"
+                #### START TEACHER INTERFACE ####
         else:
             tkMessageBox.showwarning("Login Failure", "Login Failed.\nPassword "
                                      "or Username incorrect. Please try again")            
@@ -115,6 +120,7 @@ class RegistrationScreen(Frame):
         self.rego_button.grid(row=4, column=0, padx=5, pady=5)
         self.cancel_button = Button(self.inputs_frame, text="Cancel", command=self.cancel)
         self.cancel_button.grid(row=4, column=1, padx=5, pady=5)
+        self.type_selected = False
         
 
     def tpw(self, e):
@@ -123,7 +129,7 @@ class RegistrationScreen(Frame):
         self.tpw_entry = Entry(self.check_frame)
         self.tpw_entry.grid(row=1, column=1, padx=5, pady=5)
         self.tpw_entry['show'] = "*"
-        print self.v.get()
+        self.type_selected = "teacher"
 
     def spw(self, e):
         if self.tpw_entry != None:
@@ -131,30 +137,44 @@ class RegistrationScreen(Frame):
             self.tpw_entry.destroy()
             self.tpw_label = None
             self.tpw_entry = None
+        self.type_selected = "student"
 
 
     def register(self):
-        if tpw_entry != None and tpw_entry.get() != "engineering":
-            tkMessageBox.showwarning("Passwords don't match", "Must enter correct password "
+        if not self.type_selected:
+            tkMessageBox.showwarning("Registration Failure", "Must select if creating a "
+                                     "student or teacher account.")
+            return	
+
+        if (self.tpw_entry != None) and (self.tpw_entry.get() != "engineering"):
+            tkMessageBox.showwarning("Registration Failure", "Must enter correct password "
                                      "to create teacher account.")
             return
         name = self.name_entry.get()
         username = self.username_entry.get()
         password = self.password_entry.get()
         password_conf = self.confpw_entry.get()
+        for x in [name, username, password, password_conf]:
+            if x == "":
+                tkMessageBox.showwarning("Registration Failure", "Please complete all fields.")
+                return
         if password != password_conf:
             # Pop up window saying that passwords do not match
             tkMessageBox.showwarning("Registration Failure", 
                                      "The passwords you have entered do not match. "
                                      "Ensure that your passwords are matching and try again.")
             return
+        if self.type_selected == "student":
+            account_type = "student"
+        else:
+            account_type = "teacher"
         if database.username_exists(username):
             tkMessageBox.showwarning("Registration Failure",
                                      "The username that you have selected already exists. "
                                      "Please choose a different username.")
             return
         else:
-            database.create_user(name, username, hasher.create_hash(password))
+            database.create_user(name, username, account_type, hasher.create_hash(password))
             self.destroy()
             login = LoginScreen(master=root)
             login.pack()
