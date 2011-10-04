@@ -75,37 +75,70 @@ class RegistrationScreen(Frame):
     
     def __init__(self, master):
         Frame.__init__(self, master)
-        self.create_widgets()
+        self.create_type_selects()
+        self.create_inputs()
 
-    def create_widgets(self):
-        for i, label_text in enumerate(["Name", "Age", "Username", "Password",
+    def create_type_selects(self):
+        self.check_frame = Frame(self)
+        self.check_frame.pack(side=TOP, expand=True)
+        self.v = IntVar()
+        self.student_rb = Radiobutton(self.check_frame, text="Student", 
+                                      variable=self.v, value=1)
+        self.student_rb.grid(row=0, column=0, padx=5, pady=5)
+        self.teacher_rb = Radiobutton(self.check_frame, text="Teacher", 
+                                     variable=self.v, value=2)
+        self.teacher_rb.grid(row=0, column=1, padx=5, pady=5)
+        self.teacher_rb.bind("<Button-1>", self.tpw)
+        self.student_rb.bind("<Button-1>", self.spw)
+        self.tpw_label = None
+        self.tpw_entry = None
+        
+
+    def create_inputs(self):
+        self.inputs_frame = Frame(self)        
+        self.inputs_frame.pack(side=BOTTOM)
+        for i, label_text in enumerate(["Name", "Username", "Password",
                                         "Confirm Password"]):
-            label = Label(self, text=label_text)
+            label = Label(self.inputs_frame, text=label_text, width=18)
             label.grid(row=i, column=0, padx=5, pady=5)
-        self.name_entry = Entry(self)
+        self.name_entry = Entry(self.inputs_frame)
         self.name_entry.grid(row=0, column=1, padx=5, pady=5)
-        ages = ["4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-                "15", "16"]
-        self.var = StringVar(self)
-        self.var.set(ages[0])
-        self.age_select = apply(OptionMenu, (self, self.var) + tuple(ages))
-        self.age_select.grid(row=1, column=1, padx=5, pady=5)        
-        self.username_entry = Entry(self)
-        self.username_entry.grid(row=2, column=1, padx=5, pady=5)
-        self.password_entry = Entry(self)
-        self.password_entry.grid(row=3, column=1, padx=5, pady=5)
+        self.username_entry = Entry(self.inputs_frame)
+        self.username_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.password_entry = Entry(self.inputs_frame)
+        self.password_entry.grid(row=2, column=1, padx=5, pady=5)
         self.password_entry['show'] = "*"
-        self.confpw_entry = Entry(self)
-        self.confpw_entry.grid(row=4, column=1, padx=5, pady=5)
+        self.confpw_entry = Entry(self.inputs_frame)
+        self.confpw_entry.grid(row=3, column=1, padx=5, pady=5)
         self.confpw_entry['show'] = "*"
-        self.rego_button = Button(self, text="Register", command=self.register)
-        self.rego_button.grid(row=5, column=0, padx=5, pady=5)
-        self.cancel_button = Button(self, text="Cancel", command=self.cancel)
-        self.cancel_button.grid(row=5, column=1, padx=5, pady=5)
+        self.rego_button = Button(self.inputs_frame, text="Register", command=self.register)
+        self.rego_button.grid(row=4, column=0, padx=5, pady=5)
+        self.cancel_button = Button(self.inputs_frame, text="Cancel", command=self.cancel)
+        self.cancel_button.grid(row=4, column=1, padx=5, pady=5)
+        
+
+    def tpw(self, e):
+        self.tpw_label = Label(self.check_frame, text="Enter teacher password")
+        self.tpw_label.grid(row=1, column=0, padx=5, pady=5)
+        self.tpw_entry = Entry(self.check_frame)
+        self.tpw_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.tpw_entry['show'] = "*"
+        print self.v.get()
+
+    def spw(self, e):
+        if self.tpw_entry != None:
+            self.tpw_label.destroy()
+            self.tpw_entry.destroy()
+            self.tpw_label = None
+            self.tpw_entry = None
+
 
     def register(self):
+        if tpw_entry != None and tpw_entry.get() != "engineering":
+            tkMessageBox.showwarning("Passwords don't match", "Must enter correct password "
+                                     "to create teacher account.")
+            return
         name = self.name_entry.get()
-        age = int(self.var.get())
         username = self.username_entry.get()
         password = self.password_entry.get()
         password_conf = self.confpw_entry.get()
@@ -121,7 +154,7 @@ class RegistrationScreen(Frame):
                                      "Please choose a different username.")
             return
         else:
-            database.create_user(name, age, username, hasher.create_hash(password))
+            database.create_user(name, username, hasher.create_hash(password))
             self.destroy()
             login = LoginScreen(master=root)
             login.pack()

@@ -14,7 +14,6 @@ def create_tables():
     # Create users table
     sql("""create table users ( "id" integer primary key,
                                 "name" varchar(30),
-                                "age" integer,
                                 "username" varchar(30),
                                 "password" varchar(96)
                                 );""")
@@ -32,11 +31,11 @@ def get_hashedpw(username):
     ls = sql("""select "password" from users where "username"=?""", (username,));
     return ls
 
-def create_user(name, age, username, hashedpw):
+def create_user(name, username, hashedpw):
     """ Inserts a user into the users table. """
 
-    sql("""insert into users("name", "age", "username", "password") values
-           (?, ?, ?, ?)""", (name, age, username, hashedpw))
+    sql("""insert into users("name", "username", "password") values
+           (?, ?, ?, ?)""", (name, username, hashedpw))
     db.commit()
       
 
