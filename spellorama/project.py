@@ -1,7 +1,7 @@
 from Tkinter import *
 import tkMessageBox
-from spellorama.controllers import ListEditorController
-from spellorama.views import ListEditorView
+import hasher
+import database
 
 class StartUpScreen(Frame):
 
@@ -45,6 +45,7 @@ class LoginScreen(Frame):
         self.username_entry.grid(row=0, column=1, padx=5, pady=5)
         self.password_entry = Entry(self)
         self.password_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.password_entry['show'] = "*"
         self.login_button = Button(self, text="Login", command=self.login)
         self.login_button.grid(row=2,column=0, padx=5, pady=5)
         self.cancel_button = Button(self, text="Cancel", command=self.cancel)
@@ -53,7 +54,17 @@ class LoginScreen(Frame):
     def login(self):
         username = self.username_entry.get()    
         password = self.password_entry.get()
-        print "Username is %s -- Password is %s" % (username, password)
+        if not database.username_exists(username):
+            tkMessageBox.showwarning("Login Failure", "Login Failed.\nPassword "
+                                     "or Username incorrect. Please try again")
+            return
+        if hasher.test_hash(password, database.get_hashedpw(username)[0][0]):
+            print "Login Successful"
+            self.destroy()
+        else:
+            tkMessageBox.showwarning("Login Failure", "Login Failed.\nPassword "
+                                     "or Username incorrect. Please try again")            
+
 
     def cancel(self):
         self.destroy()
@@ -98,14 +109,22 @@ class RegistrationScreen(Frame):
         username = self.username_entry.get()
         password = self.password_entry.get()
         password_conf = self.confpw_entry.get()
-        if password == password_conf:
-            #Add functionality
-            print "%s %d %s %s %s" % (name, age, username, password, password_conf)
-        else:
+        if password != password_conf:
             # Pop up window saying that passwords do not match
             tkMessageBox.showwarning("Registration Failure", 
                                      "The passwords you have entered do not match. "
                                      "Ensure that your passwords are matching and try again.")
+            return
+        if database.username_exists(username):
+            tkMessageBox.showwarning("Registration Failure",
+                                     "The username that you have selected already exists. "
+                                     "Please choose a different username.")
+            return
+        else:
+            database.create_user(name, age, username, hasher.create_hash(password))
+            self.destroy()
+            login = LoginScreen(master=root)
+            login.pack()
             
     def cancel(self):
         self.destroy()
