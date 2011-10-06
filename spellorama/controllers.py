@@ -5,6 +5,8 @@ import os
 import random
 import logging
 
+import teacher
+
 import tkFileDialog
 import tkMessageBox
 import tkSimpleDialog
@@ -110,6 +112,14 @@ class ListEditorController(object):
     def on_panic_button(self):
         """ Method called when the stop button is pressed. """
         self.tts.panic()
+
+    def on_return_button(self):
+        master = self.view.master
+        self.view.destroy()
+        t = teacher.TeacherInterface(master)
+        t.pack()
+        
+        
 
     def on_import_button(self):
         """ Method called when the import button in the toolbar is pressed. """
@@ -240,6 +250,7 @@ class ListEditorController(object):
         view.right_list.listbox.bind("<<ListboxSelect>>",
                                      lambda _: self.on_right_list_select())
 
+        view.toolkit.return_button['command'] = self.on_return_button
         view.toolkit.import_button['command'] = self.on_import_button
         view.toolkit.create_button['command'] = self.on_create_button
         view.toolkit.export_button['command'] = self.on_export_button

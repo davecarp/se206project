@@ -288,12 +288,12 @@ class ToolkitWidget(Frame):
         """
         Populate with toobar buttons.
         """
-        self.manage_button = Button(self, text="Manage Students")
+        self.return_button = Button(self, text="Return to Teacher Menu")
         self.import_button = Button(self, text="Import List")
         self.export_button = Button(self, text="Export List")
         self.create_button = Button(self, text="Create New Word")        
 
-        for x in [ self.manage_button, self.import_button,
+        for x in [ self.return_button, self.import_button,
                    self.export_button, self.create_button ]:
             x.pack(side=LEFT, fill=X, expand=True)
 
@@ -302,6 +302,7 @@ class ListEditorView(Frame):
     Main widget for the Teacher list editor view.
     """
     def __init__(self, master=None):
+        self.master = master
         Frame.__init__(self, master)
         self.pack()
         self.create_widgets()

@@ -4,6 +4,7 @@ import views
 import controllers
 import database
 import hasher
+import project
 
 class TeacherInterface(Frame):
     
@@ -19,6 +20,8 @@ class TeacherInterface(Frame):
         self.studentmanager = Button(self, text="Manage Students",
                                      command=self.open_studentmanager)
         self.studentmanager.grid(row=0, column=1, padx=5, pady=5)
+        self.logout_button = Button(self, text='Logout', width=20, command=self.logout)
+        self.logout_button.grid(row=1, column=0, columnspan=5, padx=5, pady=5)
 
     def open_listeditor(self):
         self.destroy()
@@ -31,6 +34,11 @@ class TeacherInterface(Frame):
         stdman = StudentManager(self.master)
         stdman.pack()
 
+    def logout(self):
+        self.destroy()
+        p = project.StartUpScreen(master = self.master)
+        p.pack()
+
 class StudentManager(Frame):
 
     def __init__(self, master):
@@ -40,33 +48,53 @@ class StudentManager(Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        self.label = Label(self, text="Students") 
+        self.label = Label(self, text="Students", font=("", 100)) 
         self.label.grid(row=0, column = 0, padx=5, pady=5)       
-        self.listbox_frame = Frame(self)
-        self.listbox_frame.grid(row=1, column=0, padx=5, pady=5)
-        self.scrollbar = Scrollbar(self.listbox_frame)
-        self.scrollbar.pack(side=RIGHT, fill=Y)
-        self.listbox = Listbox(self.listbox_frame, yscrollcommand=self.scrollbar.set)
-        self.listbox.pack(side=LEFT, fill=BOTH)
-        self.scrollbar.config(command=self.listbox.yview)
+        self.lister = ScrollingListBox(self)
+        self.lister.grid(row=1, rowspan=5, column=0, padx=5, pady=5)
         for s in self.list_of_students:
-            self.listbox.insert(END, s[1])
-        self.listbox.bind("<ButtonRelease-1>", self.student_selected)
+            self.lister.listbox.insert(END, s[1])
+        self.lister.listbox.bind("<ButtonRelease-1>", self.student_selected)
         self.reset_password = Button(self, text="Reset Password", command=self.reset)
         self.reset_password['state'] = "disabled"
-        self.reset_password.grid(row=2, column=0, padx=5, pady=5)
+        self.reset_password.grid(row=6, column=0, padx=5, pady=5)
         self.records = StudentRecordsWidget(master=self)
-        self.records.grid(row=0, rowspan=3, column=1, padx=5, pady=5)
+        self.records.grid(row=0, rowspan=5, column=1, padx=5, pady=5)
+        self.completed_lists = Button(self, text='View Completed Lists', 
+                                      command=self.view_lists)
+        self.set_lists = Button(self, text="Assign Lists to Student",
+                                command=self.assign_lists)
+        self.return_to_main = Button(self, text="Return to Teacher Menu",
+                                     command=self.main_menu)
+        self.return_to_main.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
+
+    def view_lists(self):
+        self.destroy()
+        viewer = CompletedListViewer(master=self.master)
+        viewer.pack()
+
+    def assign_lists(self):
+        self.destroy()
+        assigner = ListAssigner(master=self.master)   
+        assigner.pack()
+
 
     def student_selected(self, event):
         self.reset_password['state'] = "active"
-        self.index = int(self.listbox.curselection()[0])
+        self.completed_lists.grid(row=5, column=1, padx=5, pady=5)
+        self.set_lists.grid(row=6, column=1, padx=5, pady=5)
+        self.index = int(self.lister.listbox.curselection()[0])
         self.records.update(self.list_of_students[self.index])
 
     def reset(self):
         userID = int(self.list_of_students[self.index][0])
         userName = self.list_of_students[self.index][1]
         re = PasswordReset(userID, userName)
+    
+    def main_menu(self):
+        self.destroy()
+        t = TeacherInterface(master = self.master)
+        t.pack()
 
 class PasswordReset(Toplevel):
 
@@ -104,9 +132,9 @@ class PasswordReset(Toplevel):
 
 class StudentRecordsWidget(Frame):
         
-    def __init__(self, master=None):
-        Frame.__init__(self, master)
-        self.pack()
+    def __init__(self, master):
+        self.master = master
+        Frame.__init__(self, master, width=100)
         self.create_widgets()
 
     def create_widgets(self):
@@ -160,18 +188,43 @@ class StudentRecordsWidget(Frame):
             self.percentincorrect_value['text'] = "%.2f %%" % student[9]
         except TypeError:
             self.percentincorrect_value['text'] = "No Information Available"
-        self.completed_lists = Button(self, text='View Completed Lists', 
-                                      command=self.view_lists)
-        self.set_lists = Button(self, text="Assign Lists to Student",
-                                command=self.assign_lists)
-        self.completed_lists.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
-        self.set_lists.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
 
-    def view_lists(self):
-        pass
+class ListAssigner(Frame):
+        
+    def __init__(self, master):
+        self.master = master
+        Frame.__init__(self, master)
+        self.create_widgets()
+        
+    def create_widgets(self):
+        self.lister = ScrollingListBox(self)
+        self.lister.pack() 
+        for i in range(1,100):
+            self.lister.listbox.insert(END, i)       
+    
+class ScrollingListBox(Frame):
+        
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        self.create_widgets()
 
-    def assign_lists(self):
-        pass
+    def create_widgets(self):
+        self.scrollbar = Scrollbar(self)
+        self.scrollbar.pack(side=RIGHT, fill=Y)
+        self.listbox = Listbox(self, yscrollcommand=self.scrollbar.set)
+        self.listbox.pack(side=LEFT, fill=BOTH)
+        self.scrollbar.config(command=self.listbox.yview)
+
+class CompletedListViewer(Frame):
+
+    def __init__(self, master):
+        self.master = master
+        Frame.__init__(self, master)
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.label=Label(self, text='Completed Lists')
+        self.label.pack()
 
 if __name__ == "__main__":
     root = Tk()
