@@ -90,6 +90,11 @@ def get_account_type(username):
     
     ls = sql("""select account_type from users where "username"=?""", (username,))
     return ls[0][0]
+
+def get_student_list():
+    """Gets list of users with account type as student"""
+
+    return sql("""select name from users where account_type="student";""")
       
 
 
