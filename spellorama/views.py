@@ -1,7 +1,7 @@
 from Tkinter import *
 import time
 
-from spellorama.models import Word
+from models import Word
   
 class AddWordDialog(Toplevel):
     """

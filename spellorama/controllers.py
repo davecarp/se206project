@@ -9,9 +9,9 @@ import tkFileDialog
 import tkMessageBox
 import tkSimpleDialog
 
-from spellorama.views import ListEditorView, new_word_prompt
-from spellorama.tts import Festival
-from spellorama.tldr import parse_tldr, gen_tldr
+from views import ListEditorView, new_word_prompt
+from tts import Festival
+from tldr import parse_tldr, gen_tldr
 
 
 class ListEditorController(object):

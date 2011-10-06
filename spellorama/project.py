@@ -2,6 +2,8 @@ from Tkinter import *
 import tkMessageBox
 import hasher
 import database
+import teacher
+
 
 class StartUpScreen(Frame):
 
@@ -65,7 +67,10 @@ class LoginScreen(Frame):
                 #### START STUDENT INTERFACE ####
             else:
                 print "Logging in as teacher"
-                #### START TEACHER INTERFACE ####
+                self.destroy()
+                teacher_screen = teacher.TeacherInterface(master=root)
+                teacher_screen.pack()
+                
         else:
             tkMessageBox.showwarning("Login Failure", "Login Failed.\nPassword "
                                      "or Username incorrect. Please try again")            

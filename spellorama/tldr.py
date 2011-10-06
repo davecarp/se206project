@@ -1,4 +1,4 @@
-from spellorama.models import Word
+from models import Word
 
 class ParserError(Exception):
     """
