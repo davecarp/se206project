@@ -21,7 +21,7 @@ def create_tables():
                                 "words_correct" integer,
                                 "words_incorrect" integer,
                                 "percent_correct" double,
-                                "percent incorrect" double
+                                "percent_incorrect" double
                                 );""")
     
     # Create list ID table
@@ -94,7 +94,13 @@ def get_account_type(username):
 def get_student_list():
     """Gets list of users with account type as student"""
 
-    return sql("""select name from users where account_type="student";""")
+    return sql("""select * from users where account_type="student";""")
+
+def change_password(ID, password):
+    """ Resets the password of a user given their userID. """
+
+    sql("""update users set "password"=? where "user_ID"=?""", (password,ID))
+    db.commit()
       
 
 
