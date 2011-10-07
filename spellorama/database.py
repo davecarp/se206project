@@ -6,7 +6,7 @@ def sql(query, params=()):
     c = db.cursor()
     c.execute(query, params)
 
-    return list(c)
+    return c
 
 def create_tables():
     """ Sets up the database for the first run. """  
@@ -33,7 +33,8 @@ def create_tables():
     sql("""create table wordIdent ( "word_ID" integer primary key,
                                     "word" varchar(30),
                                     "meaning" varchar(100),
-                                    "example" varchar(100)
+                                    "example" varchar(100),
+                                    "difficulty" varchar(3)
                                     );""")
 
     # Create available lists table
@@ -80,16 +81,16 @@ def get_hashedpw(username):
 def create_user(name, username, account_type, hashedpw):
     """ Inserts a user into the users table. """
 
-    sql("""insert into users("name", "username", "password", "account_type") values
-           (?, ?, ?, ?)""", (name, username, hashedpw, account_type))
+    with db:
+        sql("""insert into users("name", "username", "password", "account_type") values
+               (?, ?, ?, ?)""", (name, username, hashedpw, account_type))
 
-    db.commit()
+
 
 def get_account_type(username):
     """ Gets account type for a given username. """
     
-    ls = sql("""select account_type from users where "username"=?""", (username,))
-    return ls[0][0]
+    return sql("""select account_type from users where "username"=?""", (username,)).fetchone()[0]
 
 def get_student_list():
     """Gets list of users with account type as student"""
@@ -99,8 +100,40 @@ def get_student_list():
 def change_password(ID, password):
     """ Resets the password of a user given their userID. """
 
-    sql("""update users set "password"=? where "user_ID"=?""", (password,ID))
-    db.commit()
+    with db:
+        sql("""update users set "password"=? where "user_ID"=?""", (password,ID))
+    
+
+def add_word(word, defin, context, diff):
+    """ Adds a word to the database. """
+    
+    with db:   
+        return sql("""insert into wordIdent ("word", "meaning", "example", "difficulty") 
+                      values (?, ?, ?, ?);""", (word, defin, context, diff)).lastrowid
+    
+
+def add_list(filename):
+    """ Adds a list to the database. """
+        
+    with db:
+        return sql("""insert into listIdent ("list_name") values (?)""", (filename,)).lastrowid
+
+def add_wordlist_mappings(list_ID):
+
+    sql("""insert into listToWord ("list_ID", "word_ID") values (?,?)""", 
+        (list_ID, word_ID))
+
+def get_filenames():
+    """ Gets list of .tldr files. """
+
+    return sql("""select * from listIdent;""")
+
+def get_words_from_file(list_ID):
+    """ Gets list of words from a given file ID. """
+
+    # GET THIS JOINED
+    sql("""select word_ID from listToWords where list_ID=?""", (list_ID,))
+   
       
 
 

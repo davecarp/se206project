@@ -128,7 +128,11 @@ class ListEditorController(object):
         for filename in filenames:
             try:
                 with open(filename, "r") as f:
-                    data = list(parse_tldr(f))
+                    list_Id = database.new_list(filename)
+                    data = list(parse_tldr(f))  
+                    for word in data:
+                        word_Id = database.addword(*word)
+                        database.add_wordlist_mappings(list_Id, word_Id)
             except IOError as e:
                 tkMessageBox.showwarning(
                     "Import Error",
@@ -196,20 +200,13 @@ class ListEditorController(object):
         )
 
     def populate(self):
-        """ Populates the list of lists with the files that are specified to be 
-        in there from start up. """
-        if not os.path.isdir("presets"): return
-
-        for filename in os.listdir("presets"):
-            if filename.rsplit(".", 1)[-1] == "tldr":
-                path = os.path.join("presets", filename)
-                try:
-                    with open(path, "r") as f:
-                        data = list(parse_tldr(f))
-                except Exception as e:
-                    logging.warn(e)
-                else:
-                    self.view.left_list.model[os.path.relpath(path)] = data
+        """ Populates the list of lists with the files that are in the 
+        database. """
+        list_of_files = database.get_filenames()
+        for _,filename in list_of_files:
+            words_in_file = database.get_words_from_file(list_ID)
+            self.view.right_list.model[filename] = #list of words to be added then
+        
 
     def refresh_transfer_strip(self):
         """ Method called by all methods invoked when there are words added 
