@@ -38,7 +38,7 @@ def create_tables():
                                     );""")
 
     # Create available lists table
-    sql("""create table avaliableLists ( "list_ID" integer references "listIdent"("list_ID"),
+    sql("""create table availableLists ( "list_ID" integer references "listIdent"("list_ID"),
                                          "user_ID" integer references "users"("user_ID"),
                                          primary key ("list_ID","user_ID")
                                          );""")
@@ -64,6 +64,10 @@ def create_tables():
                                        "words_total",
                                        primary key ("user_ID", "list_ID")
                                        );""")
+
+    # Create a new list in the lists table that created words can be added to.
+    with db:
+        sql("""insert into listIdent ("list_name") values (?)""", ("Created Words",))
     
 def username_exists(username):
     """Tests to see if a given string exists as a username. """
@@ -118,10 +122,11 @@ def add_list(filename):
     with db:
         return sql("""insert into listIdent ("list_name") values (?)""", (filename,)).lastrowid
 
-def add_wordlist_mappings(list_ID):
+def add_wordlist_mappings(list_ID, word_ID):
 
-    sql("""insert into listToWord ("list_ID", "word_ID") values (?,?)""", 
-        (list_ID, word_ID))
+    with db:
+        sql("""insert into listToWord ("list_ID", "word_ID") values (?,?)""", 
+            (list_ID, word_ID))
 
 def get_filenames():
     """ Gets list of .tldr files. """
@@ -131,8 +136,20 @@ def get_filenames():
 def get_words_from_file(list_ID):
     """ Gets list of words from a given file ID. """
 
-    # GET THIS JOINED
-    sql("""select word_ID from listToWords where list_ID=?""", (list_ID,))
+    
+    word_IDs= sql("""select word_ID from listToWord where list_ID=?""", (list_ID,))
+    
+    result = []
+
+    for (i,) in word_IDs:
+        result.append(sql("""select * from wordIdent where word_ID = ?;""", (i,)).fetchone())
+
+    return result
+        
+def get_word_id(word, defin, ex, diff):
+        
+    return sql("""select * from wordIdent where "word"=? and "meaning"=? and "example"=?
+               and "difficulty"=?;""", (word, defin, ex, diff))
    
       
 

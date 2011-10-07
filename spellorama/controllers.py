@@ -6,6 +6,8 @@ import random
 import logging
 
 import teacher
+from models import Word
+import database
 
 import tkFileDialog
 import tkMessageBox
@@ -34,8 +36,8 @@ class ListEditorController(object):
         .tldr files that can be read from. """
         self.view.center_list.model.clear()
         for selection in self.view.left_list.listbox.curselection():
-            for word in self.view.left_list.model.get_value_by_index(int(selection)):
-                self.view.center_list.model[word.word] = word
+            for k, v in self.view.left_list.model.get_value_by_index(int(selection)).iteritems():
+                self.view.center_list.model[k] = v
         self.view.center_list.listbox.select_set(0, END)
         self.on_center_list_select()
         self.refresh_transfer_strip()
@@ -128,23 +130,24 @@ class ListEditorController(object):
         for filename in filenames:
             try:
                 with open(filename, "r") as f:
-                    list_Id = database.new_list(filename)
+                    list_Id = database.add_list(filename)
                     data = list(parse_tldr(f))  
                     for word in data:
-                        word_Id = database.addword(*word)
-                        database.add_wordlist_mappings(list_Id, word_Id)
+                        try:
+                            word_Id = database.add_word(word.word,
+                                                        word.definition,
+                                                        word.example,
+                                                        word.difficulty)
+                        except Exception:
+                            pass
+                        else:
+                            database.add_wordlist_mappings(list_Id, word_Id)
             except IOError as e:
                 tkMessageBox.showwarning(
                     "Import Error",
                     "Could not open {0}".format(filename)
                 )
-                logging.warn(e)
-            except Exception as e:
-                tkMessageBox.showwarning(
-                    "Import Error",
-                    "Could not parse {0}".format(filename)
-                )
-                logging.warn(e)
+                logging.warn(e)  
             else:
                 self.view.left_list.model[os.path.relpath(filename)] = data
 
@@ -153,8 +156,17 @@ class ListEditorController(object):
         pressed. """
         word = new_word_prompt()
         if word is not None:
-            self.view.right_list.model[word.word] = word
-        self.refresh_transfer_strip()
+            try:
+                word_Id = database.add_word(word.word,
+                                            word.definition,
+                                            word.example,
+                                            word.difficulty)
+            except Exception:
+                pass
+            else:
+                database.add_wordlist_mappings(1, word_Id)
+        self.populate()
+        self.on_left_list_select()
 
     def on_random_button(self):
         """ Method called when the create random list button in the
@@ -198,15 +210,25 @@ class ListEditorController(object):
             "Export",
             "Exported successfully to {0}".format(filename)
         )
+        
+
+        lid = database.add_list(filename)
+        for w in words:
+            wid = database.get_word_id(w.word, w.definition, w.example, w.difficulty).fetchone()[0]
+            database.add_wordlist_mappings(lid, wid)
+        self.populate()
 
     def populate(self):
         """ Populates the list of lists with the files that are in the 
         database. """
         list_of_files = database.get_filenames()
-        for _,filename in list_of_files:
+        for list_ID,filename in list_of_files:
             words_in_file = database.get_words_from_file(list_ID)
-            self.view.right_list.model[filename] = #list of words to be added then
-        
+            word_dict = {}
+            for i in words_in_file:
+                w = Word(i[1], i[2], i[3], i[4])
+                word_dict[i[1]] = w
+            self.view.left_list.model[filename] = word_dict
 
     def refresh_transfer_strip(self):
         """ Method called by all methods invoked when there are words added 
