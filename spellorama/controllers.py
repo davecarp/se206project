@@ -150,6 +150,7 @@ class ListEditorController(object):
                 logging.warn(e)  
             else:
                 self.view.left_list.model[os.path.relpath(filename)] = data
+        self.populate()
 
     def on_create_button(self):
         """ Method called when the create new word button in the toolbar is

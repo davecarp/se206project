@@ -3,6 +3,7 @@ import tkMessageBox
 import hasher
 import database
 import teacher
+import student
 
 
 class StartUpScreen(Frame):
@@ -63,10 +64,11 @@ class LoginScreen(Frame):
         if hasher.test_hash(password, database.get_hashedpw(username)[0][0]):
             self.destroy()
             if database.get_account_type(username) == "student":
-                print "Logging in as student"
-                #### START STUDENT INTERFACE ####
+                self.destroy()
+		student_screen = student.StudentInterface(master=root,
+							  student=database.get_student(username))
+		student_screen.pack()
             else:
-                print "Logging in as teacher"
                 self.destroy()
                 teacher_screen = teacher.TeacherInterface(master=root)
                 teacher_screen.pack()

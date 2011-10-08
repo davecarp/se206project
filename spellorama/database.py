@@ -72,15 +72,14 @@ def create_tables():
 def username_exists(username):
     """Tests to see if a given string exists as a username. """
 
-    if sql("""select * from users where "username"=?""", (username,)):  
+    if sql("""select * from users where "username"=?""", (username,)).fetchone():  
         return True
     else: 
         return False
 
 def get_hashedpw(username):
     """Returns the hashed password for a given username. """
-    ls = sql("""select "password" from users where "username"=?""", (username,));
-    return ls
+    return list(sql("""select "password" from users where "username"=?;""", (username,)))
 
 def create_user(name, username, account_type, hashedpw):
     """ Inserts a user into the users table. """
@@ -99,7 +98,7 @@ def get_account_type(username):
 def get_student_list():
     """Gets list of users with account type as student"""
 
-    return sql("""select * from users where account_type="student";""")
+    return list(sql("""select * from users where account_type="student";"""))
 
 def change_password(ID, password):
     """ Resets the password of a user given their userID. """
@@ -150,6 +149,38 @@ def get_word_id(word, defin, ex, diff):
         
     return sql("""select * from wordIdent where "word"=? and "meaning"=? and "example"=?
                and "difficulty"=?;""", (word, defin, ex, diff))
+
+def get_lists():
+	
+    return list(sql("""select * from listIdent;"""))
+
+def get_available_lists(userID):
+
+    list_IDs = sql("""select list_ID from availableLists where user_ID=?;""",
+                   (userID,))
+
+    result = []
+    
+    for (i,) in list_IDs:
+        result.append(sql("""select * from listIdent where list_ID=?;""", (i,)).fetchone())
+
+    return list(result)
+
+def add_available_list(list_ID, user_ID):
+    
+    with db:
+        sql("""insert into availableLists (list_ID, user_ID) values (?, ?);""",
+            (list_ID, user_ID))
+
+def remove_available_list(list_ID, user_ID):
+
+    with db:
+        sql("""delete from availableLists where list_ID=? and user_ID=?;""", 
+            (list_ID, user_ID))
+
+def get_student(username):
+
+    return sql("""select * from users where username=?;""", (username,)).fetchone()
    
       
 

@@ -75,7 +75,7 @@ class StudentManager(Frame):
 
     def assign_lists(self):
         self.destroy()
-        assigner = ListAssigner(master=self.master)   
+        assigner = ListAssigner(master=self.master, student=self.list_of_students[self.index])   
         assigner.pack()
 
 
@@ -191,17 +191,116 @@ class StudentRecordsWidget(Frame):
 
 class ListAssigner(Frame):
         
-    def __init__(self, master):
+    def __init__(self, master, student):
         self.master = master
+        self.student = student
         Frame.__init__(self, master)
         self.create_widgets()
         
     def create_widgets(self):
-        self.lister = ScrollingListBox(self)
-        self.lister.pack() 
-        for i in range(1,100):
-            self.lister.listbox.insert(END, i)       
+        self.title_label = Label(self, text="Assigning lists for %s" % (self.student[1]))
+        self.title_label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
+        self.all_label = Label(self, text="All Lists")
+        self.all_label.grid(row=1, column=0, padx=5, pady=5)
+        self.avail_label = Label(self, text="Available Lists")
+        self.avail_label.grid(row=1, column=2, padx=5, pady=5)
+        self.all_lister = ScrollingListBox(self)
+        self.all_lister.listbox.bind("<ButtonRelease-1>", self.list_selected)
+        self.available_lister = ScrollingListBox(self)
+        self.available_lister.listbox.bind("<ButtonRelease-1>", self.avail_list_selected)
+        self.all_lister.grid(row=2, rowspan=4, column=0, padx=5,pady=5)
+        self.available_lister.grid(row=2, rowspan=4, column=2,padx=5,pady=5)
+        self.add_button = Button(self, text=">", command=self.add)
+        self.add_button.grid(row=2, column=1, padx=5, pady=5)
+        self.add_all_button = Button(self, text=">>", command=self.add_all)
+        self.add_all_button.grid(row=3, column=1, padx=5, pady=5)
+        self.remove_button = Button(self, text="<", command=self.remove)
+        self.remove_button.grid(row=4, column=1, padx=5, pady=5)
+        self.remove_all_button = Button(self, text="<<", command=self.remove_all)
+        self.remove_all_button.grid(row=5, column=1, padx=5, pady=5)
+        self.main_button = Button(self, text="Return to Student Manager", 
+                                  command=self.main)
+        self.main_button.grid(row=6, column=0, columnspan=3, padx=5, pady=5)
+        self.populate_lists()
+        for b in ([self.add_button, self.add_all_button, self.remove_button,
+                   self.remove_all_button]):
+            b['state'] = "disabled"
+        self.list_index = None
+        self.avail_index = None
+        self.set_button_states()
+
+    def set_button_states(self):
+        if self.all:
+            self.add_all_button['state']="active"
+        else:
+            self.add_all_button['state']="disabled"
+        if self.avail:
+            self.remove_all_button['state']="active"
+        else:
+            self.remove_all_button['state']="disabled"
+        if self.list_index != None:
+            self.add_button['state']="active"
+        else:
+            self.add_button['state']="disabled"
+        if self.avail_index != None:
+            self.remove_button['state']="active"
+        else:
+            self.remove_button['state']="disabled"
+
+
+    def populate_lists(self):
+        self.all = database.get_lists()
+        self.avail = database.get_available_lists(self.student[0])
+        for l in self.all:
+            self.all_lister.listbox.insert(END, l[1])
+        for l in self.avail:
+            self.available_lister.listbox.insert(END, l[1])
+
+    def list_selected(self, event):
+        try:
+            self.list_index = int(self.all_lister.listbox.curselection()[0])
+        except Exception:
+            pass
+        self.set_button_states()
+
+    def avail_list_selected(self, event):
+        try:
+            self.avail_index = int(self.available_lister.listbox.curselection()[0])
+        except Exception:
+            pass
+        self.set_button_states()
+
+    def add(self):
+        list_to_add = self.all[self.list_index]
+        if list_to_add not in self.avail:
+            self.avail.append(list_to_add)    
+            self.available_lister.listbox.insert(END, list_to_add[1])
+            database.add_available_list(list_to_add[0], self.student[0])
     
+    def add_all(self):
+        for l in self.all:
+            if l not in self.avail: 
+                self.avail.append(l)    
+                self.available_lister.listbox.insert(END, l[1])
+                database.add_available_list(l[0], self.student[0])
+
+    def remove(self):
+        list_to_remove = self.avail[self.avail_index]
+        del self.avail[self.avail_index]
+        self.available_lister.listbox.delete(self.avail_index)
+        database.remove_available_list(list_to_remove[0], self.student[0])
+
+    def remove_all(self):
+        for l in self.avail:
+            database.remove_available_list(l[0], self.student[0])
+        self.avail = []
+        self.available_lister.listbox.delete(0, END)
+
+    def main(self):
+        self.destroy()
+        s = StudentManager(self.master)
+        s.pack()
+
 class ScrollingListBox(Frame):
         
     def __init__(self, master):
