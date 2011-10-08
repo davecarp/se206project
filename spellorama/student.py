@@ -2,6 +2,7 @@ from Tkinter import *
 
 import database
 import teacher
+import operator
 
 class StudentInterface(Frame):
 
@@ -38,7 +39,9 @@ class StudentInterface(Frame):
         pg.pack()
 
     def high_scores(self):
-        pass
+        self.destroy()
+        hs = HighScores(master=self.master, student=self.student)
+        hs.pack()
 
 class PlayGame(Frame):
 
@@ -53,15 +56,31 @@ class PlayGame(Frame):
         self.l = Label(self, text="Your teacher has made the following lists " +
                                    "available to you.\n Select one and hit Start " 
                                    "to begin.")
-        self.l.grid(row=0, column=0, padx=5, pady=5)
+        self.l.grid(row=0, columnspan=2, column=0, padx=5, pady=5)
         self.lister = teacher.ScrollingListBox(master=self)
-        self.lister.grid(row=1, column=0, padx=5, pady=5)
+        self.lister.grid(row=1, columnspan=2, column=0, padx=5, pady=5)
+        self.cancel_button = Button(self, text="Return to main menu",
+                                    command=self.cancel)
+        self.cancel_button.grid(row=2, column=0, padx=5, pady=5)
         self.start_button = Button(self, text="Start!", command=self.start)
-        self.start_button.grid(row=2, column=0, padx=5, pady=5)
+        self.start_button.grid(row=2, column=1, padx=5, pady=5)
         for l in self.avail:
             self.lister.listbox.insert(END, l[1])
+        self.start_button['state'] = "disabled"
+        self.lister.listbox.bind("<ButtonRelease-1>", self.list_selected)
+        self.index = None
+
+    def list_selected(self, event):
+        self.start_button['state'] = "active"
+        self.index = int(self.lister.listbox.curselection()[0])
+        
+    def cancel(self):
+        self.destroy()
+        s = StudentInterface(master=self.master, student=self.student)
+        s.pack()
 
     def start(self):
+        # INSTANTIATE A GAME CLASS HERE USING THE LIST AND STUDENT AS INPUTS
         pass
 
 class Practice(Frame):
@@ -74,9 +93,35 @@ class Practice(Frame):
 
 class HighScores(Frame):
     
-    def __init__(self, master):
-        pass
+    def __init__(self, master, student):
+        self.master = master
+        self.student = student
+        Frame.__init__(self, self.master)
+        #self.create_widgets()
+        self.generate_scores(student=self.student)
+        #self.display_scores()
 
     def create_widgets(self):
+        l = Label(self, text='High Scores')
+        l.pack()
+
+    def generate_scores(self, student):
+        self.student_list = database.get_student_list()
+        self.by_words_spelt = sorted(self.student_list, 
+                                     key=operator.itemgetter(5))
+        self.by_words_correct = sorted(self.student_list, 
+                                       key=operator.itemgetter(6))
+        self.by_percent_correct = sorted(self.student_list,
+                                         key=operator.itemgetter(8))
+        for l in ([self.by_words_spelt, self.by_words_correct,
+                   self.by_percent_correct]):
+            l.reverse()
+        self.student_ratings = [(self.by_words_spelt.index(student)+1),
+                                (self.by_words_correct.index(student)+1),
+                                (self.by_percent_correct.index(student)+1)]
+        print self.student_ratings
+        
+        
+    def display_scores(self):
         pass
 	
