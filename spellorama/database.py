@@ -181,6 +181,16 @@ def remove_available_list(list_ID, user_ID):
 def get_student(username):
 
     return sql("""select * from users where username=?;""", (username,)).fetchone()
+
+def add_incorrect_word(user_ID, word_ID):
+        
+    if not sql("""select * from incorrectWords where user_ID=? and word_ID=?;""",
+               (user_ID, word_ID)):    
+        with db:
+            sql("""insert into incorrectWords (user_ID, word_ID) values (?,?);""",
+                (user_ID, word_ID))
+
+
    
       
 

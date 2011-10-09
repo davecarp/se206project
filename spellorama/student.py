@@ -4,6 +4,7 @@ import database
 import teacher
 import operator
 import game
+import project
 
 class StudentInterface(Frame):
 
@@ -29,7 +30,9 @@ class StudentInterface(Frame):
         self.logout_button.grid(row=2, column=0, columnspan=3, padx=5, pady=5)
 
     def logout(self):
-        pass
+        self.destroy()
+        p = project.StartUpScreen(master = self.master)
+        p.pack()
 
     def practice(self):
         pass
@@ -150,7 +153,9 @@ class HighScores(Frame):
         self.return_button.grid(row=10, column=0, columnspan=3, padx=5, pady=5)        
         
     def main(self):
-        pass
+        self.destroy()
+        s = StudentInterface(self.master, self.student)
+        s.pack()
 
     def generate_scores(self, student):
         self.student_list = database.get_student_list()
