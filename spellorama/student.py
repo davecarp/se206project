@@ -5,6 +5,8 @@ import teacher
 import operator
 import game
 import project
+import os
+import tkMessageBox
 
 class StudentInterface(Frame):
 
@@ -35,7 +37,9 @@ class StudentInterface(Frame):
         p.pack()
 
     def practice(self):
-        pass
+        self.destroy()
+        p = Practice(self.master, self.student)
+        p. pack()
 
     def play_game(self):
         self.destroy()
@@ -87,14 +91,6 @@ class PlayGame(Frame):
         self.destroy()
         g = game.Game(self.master, self.student, self.avail[self.index])
         g.pack()
-
-class Practice(Frame):
-       
-    def __init__(self, master, student):
-        pass
-
-    def create_widgets(self):
-        pass
 
 class HighScores(Frame):
     
@@ -195,6 +191,152 @@ class HighScores(Frame):
         self.rank_most_words['text'] = str(self.student_ratings[0])
         self.rank_correct_words['text'] = str(self.student_ratings[1])
         self.rank_percent_correct['text'] = str(self.student_ratings[2])
+
+class Practice(Frame):
+
+    def __init__(self, master, student):
+        self.master = master
+        self.student = student
+        Frame.__init__(self, self.master)
+        self.create_widgets()
+        self.words = database.get_incorrect_words(self.student[0])
+        if self.words == [] or self.words == None:
+            tkMessageBox.showinfo("No words to spell", "You have no previously "
+                                  "mis-spelt words to practice. You will now "
+                                  "be redirected to the main menu.")
+            self.destroy()
+            s = StudentInterface(self.master, self.student)
+            s.pack()
+        self.attempts = 0
+        self.word_count = 0
+        self.current_word = self.words[self.word_count]
+        
+    def create_widgets(self):
+        self.title = Label(self, text="Word #1", 
+                           font=('Comic Sans MS', 30, 'normal'))
+        self.title.grid(row=0, columnspan=3, column=0, padx=5, pady=5)
+        self.word_button = Button(self, text="Hear Word", width=12,
+                                  font=('Comic Sans MS', 13, 'normal'),
+                                  command=self.hear_word)
+        self.word_button.grid(row=1, column=0, padx=5)
+        self.example_button = Button(self, text="Hear Example", width=12,
+                                     font=('Comic Sans MS', 13, 'normal'),
+                                     command=self.hear_example)
+        self.example_button.grid(row=2, column=0, padx=5)
+        self.word_entry = Entry(self, font=('Comic Sans MS', 30, 'normal'))
+        self.word_entry.grid(row=1, rowspan=2, column=1, padx=5, pady=5)
+        self.submit_button = Button(self, text="Submit", command=self.submit,
+                                    font=('Comic Sans MS', 13, 'normal'),
+                                    width=15)
+        self.submit_button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+        self.meaning_label = Label(self, font=('Comic Sans MS', 13, 'normal'),
+                                   text="Meanging: Blah Blah Blob of bro")
+        self.meaning_label.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
+        self.quit_button = Button(self, text="Quit without saving",
+                                  font=('Comic Sans MS', 13, 'normal'),
+                                  command=self.quit)
+        self.quit_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
+        self.get_num_letters = Button(self, text="Hint #1",
+                                      font=('Comic Sans MS', 13, 'normal'),
+                                      command=self.get_letters)
+        self.get_num_letters.grid(row=1, column=3, padx=5)
+        self.get_starting_letter = Button(self, text="Hint #2",
+                                          font=('Comic Sans MS', 13, 'normal'),
+                                          command=self.get_starting)
+        self.get_starting_letter.grid(row=2, column=3,padx=5)
+        self.get_num_letters['state'] = "disabled"
+        self.get_starting_letter['state'] = "disabled"
+
+    def hear_word(self):
+        word = self.current_word[1]
+        os.system("echo %s | festival --tts" % (word))
+
+    def hear_example(self):
+        example = self.current_word[3]
+        os.system("echo %s | festival --tts" % (example))
+
+    def get_letters(self):
+        number = str(len(self.current_word[1]))
+        tkMessageBox.showinfo("Number of letters", "There are %s letters in "
+                              "the word you are trying to spell"%(number,))
+        
+    def get_starting(self):
+        starting = str(self.current_word[1][0])
+        tkMessageBox.showinfo("Starting letter", "The word that you are "
+                              "trying to spell begins with an '%s'"%(starting,))
+       
+    def submit(self):
+        entered = self.word_entry.get()
+        self.word_entry.delete(0, END)
+        if self.current_word[1] == entered:
+            tkMessageBox.showinfo("Word Correct", "Congratulations, you spelt "
+                                  "the word correct. Get ready to move onto "
+                                  "the next word.")
+            if self.attempts == 0:
+                database.remove_incorrect_word(self.student[0], self.current_word[0])
+            self.word_count += 1
+            if (self.word_count+1) > len(self.words):
+                tkMessageBox.showinfo("Practice Mode Complete", "You have "
+                                      "respelt all previously incorrect words. "
+                                      "You will now be returned to the main menu.")
+                self.destroy()
+                s = StudentInterface(self.master, self.student)
+                s.pack()
+                
+            else:
+                self.current_word = self.words[self.word_count]
+                self.title['text'] = "Word #%d" % (self.word_count +1)
+                self.get_num_letters['state'] = "disabled"
+                self.get_starting_letter['state'] = "disabled"
+                return
+        self.result.append(0)
+        self.attempts += 1
+        if self.attempts == 1:
+            tkMessageBox.showinfo("Word Incorrect", "You spelt the word "
+                                  "incorrectly this time. Hint #1 is now "
+                                  "available. Have another go.")
+            self.get_num_letters['state'] = "active"
+            return
+        if self.attempts == 2:
+            tkMessageBox.showinfo("Word Incorrect", "You spelt the word "
+                                  "incorrectly this time. Both hints are now "
+                                  "available. Have another go.")
+            self.get_starting_letter['state'] = "active"
+            return
+        if self.attempts == 3:
+            self.word_count += 1
+            if (self.word_count+1) > len(self.words):
+                tkMessageBox.showinfo("Practice Mode Complete", "You have "
+                                      "respelt all previously incorrect words. "
+                                      "You will now be returned to the main menu.")
+                self.destroy()
+                s = StudentInterface(self.master, self.student)
+                s.pack()
+            else:
+                tkMessageBox.showinfo("Word Incorrect", "You spelt the word "
+                                      "incorrectly and have used up all your "
+                                      "attempts. The correct spelling of the "
+                                      "word was '%s'. You will automatically "
+                                      "be moved on to the next word."
+                                      % self.current_word[1])
+                self.current_word = self.words[self.word_count] 
+                self.attempts = 0
+                self.get_num_letters['state'] = "disabled"
+                self.get_starting_letter['state'] = "disabled"
+                self.title['text'] = "Word #%d" % (self.word_count +1)
+                return
+            
+
+    def finish_game(self):
+        self.destroy()
+        r = ResultsScreen(self.master, self.student, self.result)
+        r.pack()
+
+
+    def quit(self):
+        self.destroy()
+        s = student.StudentInterface(self.master, self.student)
+        s.pack()
 
 
 

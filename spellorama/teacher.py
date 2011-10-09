@@ -60,18 +60,11 @@ class StudentManager(Frame):
         self.reset_password.grid(row=6, column=0, padx=5, pady=5)
         self.records = StudentRecordsWidget(master=self)
         self.records.grid(row=0, rowspan=5, column=1, padx=5, pady=5)
-        self.completed_lists = Button(self, text='View Completed Lists', 
-                                      command=self.view_lists)
         self.set_lists = Button(self, text="Assign Lists to Student",
                                 command=self.assign_lists)
         self.return_to_main = Button(self, text="Return to Teacher Menu",
                                      command=self.main_menu)
         self.return_to_main.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
-
-    def view_lists(self):
-        self.destroy()
-        viewer = CompletedListViewer(master=self.master)
-        viewer.pack()
 
     def assign_lists(self):
         self.destroy()
@@ -81,7 +74,6 @@ class StudentManager(Frame):
 
     def student_selected(self, event):
         self.reset_password['state'] = "active"
-        self.completed_lists.grid(row=5, column=1, padx=5, pady=5)
         self.set_lists.grid(row=6, column=1, padx=5, pady=5)
         self.index = int(self.lister.listbox.curselection()[0])
         self.records.update(self.list_of_students[self.index])
@@ -313,17 +305,6 @@ class ScrollingListBox(Frame):
         self.listbox = Listbox(self, yscrollcommand=self.scrollbar.set)
         self.listbox.pack(side=LEFT, fill=BOTH)
         self.scrollbar.config(command=self.listbox.yview)
-
-class CompletedListViewer(Frame):
-
-    def __init__(self, master):
-        self.master = master
-        Frame.__init__(self, master)
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.label=Label(self, text='Completed Lists')
-        self.label.pack()
 
 if __name__ == "__main__":
     root = Tk()

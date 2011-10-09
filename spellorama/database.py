@@ -54,16 +54,6 @@ def create_tables():
                                          primary key ("user_ID", "word_ID")
                                          );""")
 
-    # Create new listResults table
-    sql(""" create table listResults ( "user_ID" integer references "users"("user_ID"),
-                                       "list_ID" integer references "listIdent"("list_ID"),
-                                       "percent_correct" double,
-                                       "percent_incorrect" double,
-                                       "words_correct" integer,
-                                       "words_incorrect" integer,
-                                       "words_total",
-                                       primary key ("user_ID", "list_ID")
-                                       );""")
 
     # Create a new list in the lists table that created words can be added to.
     with db:
@@ -189,6 +179,34 @@ def add_incorrect_word(user_ID, word_ID):
         with db:
             sql("""insert into incorrectWords (user_ID, word_ID) values (?,?);""",
                 (user_ID, word_ID))
+
+def get_incorrect_words(user_ID):
+
+    word_IDs = sql("""select word_ID from incorrectWords where user_ID=?;""",
+                   (user_ID,))
+
+    result = []
+
+    for (i,) in word_IDs:
+        result.append(sql("""select * from wordIdent where word_ID = ?;""", (i,)).fetchone())
+
+    return list(result)
+
+def remove_incorrect_word(user_ID, word_ID):
+
+    with db:
+        sql("""delete from incorrectWords where user_ID=? and word_ID=?;""",
+            (user_ID, word_ID))
+
+def update_users_scores(words_t, words_c, words_i, per_c, per_i, userID):
+
+    with db:
+        sql("""update users set words_spelt=?, words_correct=?,
+            words_incorrect=?, percent_correct=?, percent_incorrect=? where
+            user_ID=?;""", (words_t, words_c, words_i, per_c, per_i, userID))
+        
+    
+        
 
 
    

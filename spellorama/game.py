@@ -181,6 +181,12 @@ class ResultsScreen(Frame):
         s.pack()
 
     def commit_results(self):
-        pass
+        new_total = self.student[5]+self.total_words
+        new_correct = self.student[6]+self.words_correct
+        new_incorrect = self.student[7]+self.words_incorrect
+        new_percentc = (new_correct/float(new_total))*100
+        new_percenti = 100-new_percentc
+        database.update_users_scores(new_total, new_correct, new_incorrect,
+                                     new_percentc, new_percenti, self.student[0])
 
 
