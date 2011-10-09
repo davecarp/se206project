@@ -12,11 +12,11 @@ class Game(Frame):
         self.ls = ls
         self.words = database.get_words_from_file(ls[0])
         Frame.__init__(self, self.master)
-        self.create_widgets()
         self.attempts = 0
         self.word_count = 0
         self.current_word = self.words[self.word_count]
         self.result = []
+        self.create_widgets()
 
     def create_widgets(self):
         self.title = Label(self, text="Word #1", 
@@ -37,7 +37,7 @@ class Game(Frame):
                                     width=15)
         self.submit_button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         self.meaning_label = Label(self, font=('Comic Sans MS', 13, 'normal'),
-                                   text="Meanging: Blah Blah Blob of bro")
+                                   text="Meaning: %s"%self.current_word[2])
         self.meaning_label.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
         self.quit_button = Button(self, text="Quit without saving",
                                   font=('Comic Sans MS', 13, 'normal'),
@@ -90,6 +90,7 @@ class Game(Frame):
                 self.title['text'] = "Word #%d" % (self.word_count +1)
                 self.get_num_letters['state'] = "disabled"
                 self.get_starting_letter['state'] = "disabled"
+                self.meaning_label['text'] = "Meaning: %s"%self.current_word[2]
                 return
         self.result.append(0)
         database.add_incorrect_word(self.student[0], self.current_word[0])
@@ -123,6 +124,7 @@ class Game(Frame):
                 self.get_num_letters['state'] = "disabled"
                 self.get_starting_letter['state'] = "disabled"
                 self.title['text'] = "Word #%d" % (self.word_count +1)
+                self.meaning_label['text'] = "Meaning: %s"%self.current_word[2]
                 return
             
 
