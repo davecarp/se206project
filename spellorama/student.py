@@ -13,23 +13,46 @@ class StudentInterface(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student        
-        Frame.__init__(self, self.master)
+        Frame.__init__(self, self.master, background="Yellow")
         self.create_widgets()
     
     def create_widgets(self):
-        self.welcome = Label(self, text="Welcome back, %s" % self.student[1])
+        self.welcome = Label(self, text="Welcome back, %s" % self.student[1],
+                             font=('Comic Sans MS', 35, 'normal'),
+                             background="Yellow", foreground="Black")
         self.welcome.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
-        self.highscores_button = Button(self, text="High Scores",
-                                        command=self.high_scores)
+        self.highscores_button = Button(self, text="View High Scores",
+                                        command=self.high_scores,
+                                        font=('Comic Sans MS', 18, 'normal'),
+                                        background="Black", foreground="Yellow",
+                                        activebackground="Orange")
         self.highscores_button.grid(row=1, column=0, padx=5, pady=5)
         self.playgame_button = Button(self, text="Play the game", 
-                                      command=self.play_game)
+                                      command=self.play_game,
+                                      font=('Comic Sans MS', 18, 'normal'),
+                                      background="Black", foreground="Yellow",
+                                      activebackground="Orange")
         self.playgame_button.grid(row=1, column=1, padx=5, pady=5)
         self.practice_button = Button(self, text="Practice", 
-                                      command=self.practice)
+                                      command=self.practice,
+                                      font=('Comic Sans MS', 18, 'normal'),
+                                      background="Black", foreground="Yellow",
+                                      activebackground="Orange")
         self.practice_button.grid(row=1, column=2, padx=5, pady=5)
-        self.logout_button = Button(self, text="Log out", command=self.logout)
-        self.logout_button.grid(row=2, column=0, columnspan=3, padx=5, pady=5)
+        self.logout_button = Button(self, text="Log out", command=self.logout,
+                                    font=('Comic Sans MS', 20, 'normal'),
+                                    background="Black", foreground="Yellow",
+                                    activebackground="Orange",
+                                    width=20)
+        self.label = Label(self, text="'View High Scores' allows you to see "
+                           "the best spellers in your class and how you "
+                           "compare.\n 'Play the game' lets you spell lists "
+                           "that your teacher has set for you.\n 'Practice' "
+                           "lets you have another go at words you spelt "
+                           "incorrectly in game mode", background="Yellow",
+                           foreground="Black", font=('Comic Sans MS', 18, 'normal'))
+        self.label.grid(row=2, column=0, columnspan=3, padx=5, pady=5)
+        self.logout_button.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
 
     def logout(self):
         self.destroy()
