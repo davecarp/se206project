@@ -9,22 +9,30 @@ import student
 class StartUpScreen(Frame):
 
     def __init__(self, master):
-        Frame.__init__(self, master, background="skyblue")
-        self.master = master        
+        Frame.__init__(self, master, background="skyblue", width=1000)
+        self.master = master  
+        self.initialise_pics()      
         self.create_widgets()
 
     def create_widgets(self):
-        self.title = Label(self, text="The DC Spelling Bee", foreground="black",
-                           font=('Comic Sans MS', 50, 'normal'), background="skyblue")
-        self.title.grid(row=0, column=0, columnspan=2,padx=10)
-        self.login = Button(self, text="Login", command=self.open_login_screen,
-			                font=('Comic Sans MS', 25, 'normal'), background="magenta",
-                            foreground="black", activebackground="Orange")
+        label_title = Label(self, image=self.image_title, background="skyblue")
+        label_title.image = self.image_title
+        label_title.grid(row=0, column=0, columnspan=2,padx=10)
+        self.login = Button(self, image=self.image_login, command=self.open_login_screen,
+			                font=('Comic Sans MS', 25, 'normal'), background="orange",
+                            foreground="black", activebackground="white")
+        self.login.image = self.image_login
         self.login.grid(row=1, column=0, padx=20, pady=20)
-        self.register = Button(self, text="Register", font=('Comic Sans MS', 25, 'normal'),
-                               command=self.open_register_screen, background="Yellow",
-                               activebackground="Orange")
+        self.register = Button(self, image=self.image_register, font=('Comic Sans MS', 25, 'normal'),
+                               command=self.open_register_screen, background="orange",
+                               activebackground="white")
+        self.register.image = self.image_register
         self.register.grid(row=1, column=1, padx=20, pady=20)
+
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/SpellingBee_Black.gif")
+        self.image_register = PhotoImage(file="pics/register.gif")
+        self.image_login = PhotoImage(file="pics/login.gif")
 
     def teacher_interface(self):
         self.destroy()   
@@ -44,37 +52,38 @@ class StartUpScreen(Frame):
 class LoginScreen(Frame):
     
     def __init__(self, master):
-        Frame.__init__(self, master, background="Yellow")
+        Frame.__init__(self, master, background="skyblue")
         self.master = master
+        self.initialise_pics()
         self.create_widgets()
 
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/login_header.gif")
+        self.image_login = PhotoImage(file="pics/login.gif")
+        self.image_cancel = PhotoImage(file="pics/cancel.gif")
+
     def create_widgets(self):
+        label_title = Label(self, image=self.image_title, background="skyblue")
+        label_title.image = self.image_title
+        label_title.grid(row=0, column=0, columnspan=2,padx=10)
         for i, label_text in enumerate(["Username", "Password"]):
             label = Label(self, text=label_text, font=('Comic Sans MS', 25, 'normal'),
-                          background="Yellow")
-            label.grid(row=i, column=0, padx=5, pady=5)
+                          background="skyblue")
+            label.grid(row=i+1, column=0, padx=5, pady=5)
         self.username_entry = Entry(self, font=('Comic Sans MS', 25, 'normal'))
-        self.username_entry.grid(row=0, column=1, padx=5, pady=5)
+        self.username_entry.grid(row=1, column=1, padx=5, pady=5)
         self.password_entry = Entry(self, font=('Comic Sans MS', 25, 'normal'))
-        self.password_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.password_entry.grid(row=2, column=1, padx=5, pady=5)
         self.password_entry['show'] = "*"
-        self.login_button = Button(self, text="Login", command=self.login,
-                                   font=('Comic Sans MS', 18, 'normal'),
-                                   foreground="Yellow", background="Black",
-                                   activebackground="Orange")
-        self.login_button.grid(row=2,column=0, padx=5, pady=5)
-        self.cancel_button = Button(self, text="Cancel", command=self.cancel,
-                                    font=('Comic Sans MS', 18, 'normal'),
-                                    foreground="Yellow", background="Black",
-                                    activebackground="Orange")
-        self.cancel_button.grid(row=2, column=1, padx=5, pady=5)
-
-        image_bee = PhotoImage(file="pics/bee2.gif")
-        bw = image_bee.width()
-        bh = image_bee.height()
-        label_bee = Label(self, image=image_bee, height=bh, width=bw, background="yellow")
-        label_bee.grid(row=3, column=0, columnspan=2)
-        label_bee.image = image_bee
+        self.login_button = Button(self, image=self.image_login, command=self.login,
+                                   background="orange",
+                                   activebackground="white")
+        self.login_button.image = self.image_login
+        self.login_button.grid(row=3,column=0, padx=5, pady=5)
+        self.cancel_button = Button(self, image=self.image_cancel, command=self.cancel,
+                                    background="orange",
+                                    activebackground="white")
+        self.cancel_button.grid(row=3, column=1, padx=5, pady=5)
 
 
     def login(self):
@@ -109,26 +118,35 @@ class LoginScreen(Frame):
 class RegistrationScreen(Frame):
     
     def __init__(self, master):
-        Frame.__init__(self, master, background="Yellow")
+        Frame.__init__(self, master, background="skyblue")
         self.master = master
+        self.initialise_pics()
         self.create_type_selects()
         self.create_inputs()
 
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/register_header.gif")
+        self.image_register = PhotoImage(file="pics/register.gif")
+        self.image_cancel = PhotoImage(file="pics/cancel.gif")
+        label_title = Label(self, image=self.image_title, background="skyblue")
+        label_title.image = self.image_title
+        label_title.pack(side=TOP)
+        
     def create_type_selects(self):
-        self.check_frame = Frame(self, background="Yellow")
+        self.check_frame = Frame(self, background="skyblue")
         self.check_frame.pack(side=TOP, expand=True)
         self.v = IntVar()
         self.student_rb = Radiobutton(self.check_frame, text="Student", 
                                       variable=self.v, value=1, height=1,
                                       font=('Comic Sans MS', 20, 'normal'),
-                                      background="Yellow", foreground="Black",
-                                      activebackground="Orange")
+                                      background="skyblue", foreground="Black",
+                                      activebackground="white")
         self.student_rb.grid(row=0, column=0, padx=5, pady=5)
         self.teacher_rb = Radiobutton(self.check_frame, text="Teacher", 
                                      variable=self.v, value=2, height=1,
                                      font=('Comic Sans MS', 20, 'normal'),
-                                     background="Yellow", foreground="Black",
-                                     activebackground="Orange")
+                                     background="skyblue", foreground="Black",
+                                     activebackground="white")
         self.teacher_rb.grid(row=0, column=1, padx=5, pady=5)
         self.teacher_rb.bind("<Button-1>", self.tpw)
         self.student_rb.bind("<Button-1>", self.spw)
@@ -137,13 +155,13 @@ class RegistrationScreen(Frame):
         
 
     def create_inputs(self):
-        self.inputs_frame = Frame(self, background="Yellow")        
+        self.inputs_frame = Frame(self, background="skyblue")        
         self.inputs_frame.pack(side=BOTTOM)
         for i, label_text in enumerate(["Name", "Username", "Password",
                                         "Confirm Password"]):
             label = Label(self.inputs_frame, text=label_text, width=19,
                           font=('Comic Sans MS', 20, 'normal'),
-                          background="Yellow", foreground="Black")
+                          background="skyblue", foreground="Black")
             label.grid(row=i, column=0, padx=5, pady=5)
         self.name_entry = Entry(self.inputs_frame, font=('Comic Sans MS', 20, 'normal'))
         self.name_entry.grid(row=0, column=1, padx=5, pady=5)
@@ -155,15 +173,12 @@ class RegistrationScreen(Frame):
         self.confpw_entry = Entry(self.inputs_frame, font=('Comic Sans MS', 20, 'normal'))
         self.confpw_entry.grid(row=3, column=1, padx=5, pady=5)
         self.confpw_entry['show'] = "*"
-        self.rego_button = Button(self.inputs_frame, text="Register", command=self.register,
-                                  font=('Comic Sans MS', 16, 'normal'),
-                                  background="Black", foreground="Yellow",
-                                  activebackground="Orange")
+        self.rego_button = Button(self.inputs_frame, image=self.image_register, command=self.register,
+                                  background="orange", activebackground="white")
+        self.rego_button.image = self.image_register
         self.rego_button.grid(row=4, column=0, padx=5, pady=5)
-        self.cancel_button = Button(self.inputs_frame, text="Cancel", command=self.cancel,
-                                    font=('Comic Sans MS', 16, 'normal'),
-                                    background="Black", foreground="Yellow",
-                                    activebackground="Orange")
+        self.cancel_button = Button(self.inputs_frame, image=self.image_cancel, command=self.cancel,
+                                    background="orange", activebackground="white")
         self.cancel_button.grid(row=4, column=1, padx=5, pady=5)
         self.type_selected = False
         
@@ -171,7 +186,7 @@ class RegistrationScreen(Frame):
     def tpw(self, e):
         self.tpw_label = Label(self.check_frame, text="Enter teacher password",
                                font=('Comic Sans MS', 20, 'normal'),
-                               background="Yellow", foreground="Black")
+                               background="skyblue", foreground="Black")
         self.tpw_label.grid(row=1, column=0, padx=5, pady=5)
         self.tpw_entry = Entry(self.check_frame,font=('Comic Sans MS', 20, 'normal'))
         self.tpw_entry.grid(row=1, column=1, padx=5, pady=5)
