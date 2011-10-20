@@ -204,6 +204,7 @@ def update_users_scores(words_t, words_c, words_i, per_c, per_i, userID):
         sql("""update users set words_spelt=?, words_correct=?,
             words_incorrect=?, percent_correct=?, percent_incorrect=? where
             user_ID=?;""", (words_t, words_c, words_i, per_c, per_i, userID))
+
         
     
         

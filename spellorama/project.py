@@ -9,16 +9,17 @@ import student
 class StartUpScreen(Frame):
 
     def __init__(self, master):
-        Frame.__init__(self, master, background="Black")        
+        Frame.__init__(self, master, background="skyblue")
+        self.master = master        
         self.create_widgets()
 
     def create_widgets(self):
-        self.title = Label(self, text="The DC Spelling Bee", foreground="Yellow",
-                           font=('Comic Sans MS', 50, 'normal'), background="Black")
+        self.title = Label(self, text="The DC Spelling Bee", foreground="black",
+                           font=('Comic Sans MS', 50, 'normal'), background="skyblue")
         self.title.grid(row=0, column=0, columnspan=2,padx=10)
         self.login = Button(self, text="Login", command=self.open_login_screen,
-			                font=('Comic Sans MS', 25, 'normal'), background="Yellow",
-                            activebackground="Orange")
+			                font=('Comic Sans MS', 25, 'normal'), background="magenta",
+                            foreground="black", activebackground="Orange")
         self.login.grid(row=1, column=0, padx=20, pady=20)
         self.register = Button(self, text="Register", font=('Comic Sans MS', 25, 'normal'),
                                command=self.open_register_screen, background="Yellow",
@@ -27,23 +28,24 @@ class StartUpScreen(Frame):
 
     def teacher_interface(self):
         self.destroy()   
-        view = ListEditorView(master=root)
+        view = ListEditorView(master=self.master)
         controller = ListEditorController(view)
       
     def open_login_screen(self):
         self.destroy()
-        login = LoginScreen(master=root)
+        login = LoginScreen(master=self.master)
         login.pack()
 
     def open_register_screen(self):
         self.destroy()
-        register = RegistrationScreen(master=root)
+        register = RegistrationScreen(master=self.master)
         register.pack()
     
 class LoginScreen(Frame):
     
     def __init__(self, master):
         Frame.__init__(self, master, background="Yellow")
+        self.master = master
         self.create_widgets()
 
     def create_widgets(self):
@@ -67,6 +69,14 @@ class LoginScreen(Frame):
                                     activebackground="Orange")
         self.cancel_button.grid(row=2, column=1, padx=5, pady=5)
 
+        image_bee = PhotoImage(file="pics/bee2.gif")
+        bw = image_bee.width()
+        bh = image_bee.height()
+        label_bee = Label(self, image=image_bee, height=bh, width=bw, background="yellow")
+        label_bee.grid(row=3, column=0, columnspan=2)
+        label_bee.image = image_bee
+
+
     def login(self):
         username = self.username_entry.get()    
         password = self.password_entry.get()
@@ -78,12 +88,12 @@ class LoginScreen(Frame):
             self.destroy()
             if database.get_account_type(username) == "student":
                 self.destroy()
-		student_screen = student.StudentInterface(master=root,
+		student_screen = student.StudentInterface(master=self.master,
 							  student=database.get_student(username))
 		student_screen.pack()
             else:
                 self.destroy()
-                teacher_screen = teacher.TeacherInterface(master=root)
+                teacher_screen = teacher.TeacherInterface(master=self.master)
                 teacher_screen.pack()
                 
         else:
@@ -93,13 +103,14 @@ class LoginScreen(Frame):
 
     def cancel(self):
         self.destroy()
-        startup = StartUpScreen(master=root)
+        startup = StartUpScreen(master=self.master)
         startup.pack()
 
 class RegistrationScreen(Frame):
     
     def __init__(self, master):
         Frame.__init__(self, master, background="Yellow")
+        self.master = master
         self.create_type_selects()
         self.create_inputs()
 
@@ -212,12 +223,12 @@ class RegistrationScreen(Frame):
         else:
             database.create_user(name, username, account_type, hasher.create_hash(password))
             self.destroy()
-            login = LoginScreen(master=root)
+            login = LoginScreen(master=self.master)
             login.pack()
             
     def cancel(self):
         self.destroy()
-        startup = StartUpScreen(master=root)
+        startup = StartUpScreen(master=self.master)
         startup.pack()
 
 if __name__ == "__main__":

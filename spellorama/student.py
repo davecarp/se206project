@@ -79,26 +79,34 @@ class PlayGame(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student
-        Frame.__init__(self, self.master)
+        Frame.__init__(self, self.master, background="Yellow")
         self.avail = database.get_available_lists(self.student[0])
         self.create_widgets()
 
     def create_widgets(self):
-        self.l = Label(self, text="Your teacher has made the following lists " +
+        self.l = Label(self, text="Your teacher has made the \nfollowing lists " +
                                    "available to you.\n Select one and hit Start " 
-                                   "to begin.")
+                                   "to begin.", font=('Comic Sans MS', 20, 'normal'),
+                                    background="Yellow", foreground="Black")
         self.l.grid(row=0, columnspan=2, column=0, padx=5, pady=5)
         self.lister = teacher.ScrollingListBox(master=self)
         self.lister.grid(row=1, columnspan=2, column=0, padx=5, pady=5)
         self.cancel_button = Button(self, text="Return to main menu",
-                                    command=self.cancel)
+                                    command=self.cancel,
+                                    font=('Comic Sans MS', 15, 'normal'),
+                                    background="Black", foreground="Yellow",
+                                    activebackground="Orange")
         self.cancel_button.grid(row=2, column=0, padx=5, pady=5)
-        self.start_button = Button(self, text="Start!", command=self.start)
+        self.start_button = Button(self, text="Start!", command=self.start,
+                                   font=('Comic Sans MS', 15, 'normal'),
+                                   background="Black", foreground="Yellow",
+                                   activebackground="Orange")
         self.start_button.grid(row=2, column=1, padx=5, pady=5)
         for l in self.avail:
             self.lister.listbox.insert(END, l[1])
         self.start_button['state'] = "disabled"
         self.lister.listbox.bind("<ButtonRelease-1>", self.list_selected)
+        self.lister.listbox['font'] = font=('Comic Sans MS', 14, 'normal')
         self.index = None
 
     def list_selected(self, event):
@@ -120,55 +128,83 @@ class HighScores(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student
-        Frame.__init__(self, self.master)
+        Frame.__init__(self, self.master, background="Yellow")
         self.create_widgets()
         self.generate_scores(student=self.student)
         self.display_scores()
 
     def create_widgets(self):
-        self.heading = Label(self, text='High Scores')
+        self.heading = Label(self, text='High Scores', background="Yellow", foreground="Black",
+                             font=('Comic Sans MS', 40, 'normal'))
         self.heading.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
-        self.most_words_heading = Label(self, text='Most Words')
+        self.most_words_heading = Label(self, text='Most Words',
+                                        background="Yellow", foreground="Black",
+                                        font=('Comic Sans MS', 15, 'normal'))
         self.most_words_heading.grid(row=1, column=0, padx=5, pady=5)
-        self.most_words_first = Label(self)
+        self.most_words_first = Label(self,  background="Yellow", foreground="Black",
+                                      font=('Comic Sans MS', 15, 'normal'))
         self.most_words_first.grid(row=1, column=1, padx=5, pady=5)
-        self.most_words_second = Label(self)
+        self.most_words_second = Label(self,  background="Yellow", foreground="Black",
+                                       font=('Comic Sans MS', 15, 'normal'))
         self.most_words_second.grid(row=2, column=1, padx=5, pady=5)
-        self.most_words_third = Label(self)
+        self.most_words_third = Label(self,  background="Yellow", foreground="Black",
+                                      font=('Comic Sans MS', 15, 'normal'))
         self.most_words_third.grid(row=3, column=1, padx=5, pady=5)
-        self.correct_words_heading = Label(self, text="Most Correct Words")
+        self.correct_words_heading = Label(self, text="Most Correct Words",
+                                           background="Yellow", foreground="Black",
+                                           font=('Comic Sans MS', 15, 'normal'))
         self.correct_words_heading.grid(row=4, column=0,
                                         padx=5, pady=5)
-        self.correct_words_first = Label(self)
+        self.correct_words_first = Label(self, background="Yellow", foreground="Black",
+                                         font=('Comic Sans MS', 15, 'normal'))
         self.correct_words_first.grid(row=4, column=1, padx=5, pady=5)
-        self.correct_words_second = Label(self)
+        self.correct_words_second = Label(self, background="Yellow", foreground="Black",
+                                          font=('Comic Sans MS', 15, 'normal'))
         self.correct_words_second.grid(row=5, column=1, padx=5, pady=5)
-        self.correct_words_third = Label(self)  
+        self.correct_words_third = Label(self, background="Yellow", foreground="Black",
+                                         font=('Comic Sans MS', 15, 'normal'))  
         self.correct_words_third.grid(row=6, column=1, padx=5, pady=5)
         self.percent_correct_heading = Label(self, 
-                                             text="Highest Percent Correct")
+                                             text="Highest Percent Correct",
+                                             background="Yellow", foreground="Black",
+                                             font=('Comic Sans MS', 15, 'normal'))
         self.percent_correct_heading.grid(row=7, column=0, padx=5, pady=5)
-        self.percent_correct_first = Label(self)
+        self.percent_correct_first = Label(self, background="Yellow", foreground="Black",
+                                           font=('Comic Sans MS', 15, 'normal'))
         self.percent_correct_first.grid(row=7, column=1, padx=5, pady=5)
-        self.percent_correct_second = Label(self)
+        self.percent_correct_second = Label(self, background="Yellow", foreground="Black",
+                                            font=('Comic Sans MS', 15, 'normal'))
         self.percent_correct_second.grid(row=8, column=1, padx=5, pady=5)
-        self.percent_correct_third = Label(self)
+        self.percent_correct_third = Label(self, background="Yellow", foreground="Black",
+                                           font=('Comic Sans MS', 15, 'normal'))
         self.percent_correct_third.grid(row=9, column=1, padx=5, pady=5)
-        self.you_most_words = Label(self, text="Your Rank") 
+        self.you_most_words = Label(self, text="Your Rank",
+                                    background="Yellow", foreground="Black",
+                                    font=('Comic Sans MS', 15, 'normal')) 
         self.you_most_words.grid(row=1, column=2, padx=5, pady=5)
-        self.you_correct_words = Label(self, text="Your Rank")
+        self.you_correct_words = Label(self, text="Your Rank",
+                                       background="Yellow", foreground="Black",
+                                       font=('Comic Sans MS', 15, 'normal'))
         self.you_correct_words.grid(row=4, column=2, padx=5, pady=5)
-        self.you_percent_correct = Label(self, text="Your Rank")
+        self.you_percent_correct = Label(self, text="Your Rank",
+                                         background="Yellow", foreground="Black",
+                                         font=('Comic Sans MS', 15, 'normal'))
         self.you_percent_correct.grid(row=7, column=2, padx=5, pady=5)
-        self.rank_most_words = Label(self)
-        self.rank_correct_words = Label(self)
-        self.rank_percent_correct = Label(self)
+        self.rank_most_words = Label(self, background="Black", foreground="Yellow",
+                                     font=('Comic Sans MS', 30, 'normal'))
+        self.rank_correct_words = Label(self, background="Black", foreground="Yellow",
+                                        font=('Comic Sans MS', 30, 'normal'))
+        self.rank_percent_correct = Label(self, background="Black", foreground="Yellow",
+                                          font=('Comic Sans MS', 30, 'normal'))
         self.rank_most_words.grid(row=2, rowspan=2, column=2, padx=5, pady=5)
         self.rank_correct_words.grid(row=5, rowspan=2, column=2, padx=5, pady=5)
         self.rank_percent_correct.grid(row=8, rowspan=2, column=2, padx=5, 
                                        pady=5)     
         self.return_button = Button(self, text="Return to Main",
-                                    command=self.main)
+                                    command=self.main, width=20,
+                                    background="Black", foreground="Yellow",
+                                    activebackground="Orange",
+                                    font=('Comic Sans MS', 15 , 'normal'))
         self.return_button.grid(row=10, column=0, columnspan=3, padx=5, pady=5)        
         
     def main(self):
@@ -220,8 +256,7 @@ class Practice(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student
-        Frame.__init__(self, self.master)
-        self.create_widgets()
+        Frame.__init__(self, self.master, background="Yellow")
         self.words = database.get_incorrect_words(self.student[0])
         if self.words == [] or self.words == None:
             tkMessageBox.showinfo("No words to spell", "You have no previously "
@@ -230,41 +265,56 @@ class Practice(Frame):
             self.destroy()
             s = StudentInterface(self.master, self.student)
             s.pack()
+        self.create_widgets()
         self.attempts = 0
         self.word_count = 0
         self.current_word = self.words[self.word_count]
         
     def create_widgets(self):
         self.title = Label(self, text="Word #1", 
-                           font=('Comic Sans MS', 30, 'normal'))
+                           font=('Comic Sans MS', 30, 'normal'),
+                           background="Yellow", foreground="Black")
         self.title.grid(row=0, columnspan=3, column=0, padx=5, pady=5)
         self.word_button = Button(self, text="Hear Word", width=12,
                                   font=('Comic Sans MS', 13, 'normal'),
-                                  command=self.hear_word)
+                                  command=self.hear_word,
+                                  background="Black", foreground="Yellow",
+                                  activebackground="Orange")
         self.word_button.grid(row=1, column=0, padx=5)
         self.example_button = Button(self, text="Hear Example", width=12,
                                      font=('Comic Sans MS', 13, 'normal'),
-                                     command=self.hear_example)
+                                     command=self.hear_example,
+                                     background="Black", foreground="Yellow",
+                                     activebackground="Orange")
         self.example_button.grid(row=2, column=0, padx=5)
         self.word_entry = Entry(self, font=('Comic Sans MS', 30, 'normal'))
         self.word_entry.grid(row=1, rowspan=2, column=1, padx=5, pady=5)
         self.submit_button = Button(self, text="Submit", command=self.submit,
                                     font=('Comic Sans MS', 13, 'normal'),
-                                    width=15)
+                                    width=15,
+                                    background="Black", foreground="Yellow",
+                                    activebackground="Orange")
         self.submit_button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         self.meaning_label = Label(self, font=('Comic Sans MS', 13, 'normal'),
-                                   text="Meanging: Blah Blah Blob of bro")
+                                   text="Meanging: Blah Blah Blob of bro",
+                                   background="Yellow")
         self.meaning_label.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
-        self.quit_button = Button(self, text="Quit without saving",
+        self.quit_button = Button(self, text="Meaning: %s"%self.current_word[2],
                                   font=('Comic Sans MS', 13, 'normal'),
+                                  background="Black", foreground="Yellow",
+                                  activebackground="Orange",
                                   command=self.quit)
         self.quit_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
         self.get_num_letters = Button(self, text="Hint #1",
                                       font=('Comic Sans MS', 13, 'normal'),
+                                      background="Black", foreground="Yellow",
+                                      activebackground="Orange",
                                       command=self.get_letters)
         self.get_num_letters.grid(row=1, column=3, padx=5)
         self.get_starting_letter = Button(self, text="Hint #2",
                                           font=('Comic Sans MS', 13, 'normal'),
+                                          background="Black", foreground="Yellow",
+                                          activebackground="Orange",
                                           command=self.get_starting)
         self.get_starting_letter.grid(row=2, column=3,padx=5)
         self.get_num_letters['state'] = "disabled"
@@ -311,6 +361,7 @@ class Practice(Frame):
                 self.title['text'] = "Word #%d" % (self.word_count +1)
                 self.get_num_letters['state'] = "disabled"
                 self.get_starting_letter['state'] = "disabled"
+                self.meaning_label['text'] = "Meaning: %s"%self.current_word[2]
                 return
         self.result.append(0)
         self.attempts += 1
@@ -347,6 +398,7 @@ class Practice(Frame):
                 self.get_num_letters['state'] = "disabled"
                 self.get_starting_letter['state'] = "disabled"
                 self.title['text'] = "Word #%d" % (self.word_count +1)
+                self.meaning_label['text'] = "Meaning: %s"%self.current_word[2]
                 return
             
 

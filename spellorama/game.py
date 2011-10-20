@@ -11,7 +11,7 @@ class Game(Frame):
         self.student = student
         self.ls = ls
         self.words = database.get_words_from_file(ls[0])
-        Frame.__init__(self, self.master)
+        Frame.__init__(self, self.master, background="Yellow")
         self.attempts = 0
         self.word_count = 0
         self.current_word = self.words[self.word_count]
@@ -19,38 +19,57 @@ class Game(Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        self.header = Label(self, text="The DC Spelling Bee",
+                            font=('Comic Sans MS', 50, 'normal'),
+                            background="Yellow", foreground="Black")
+        self.header.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
         self.title = Label(self, text="Word #1", 
-                           font=('Comic Sans MS', 30, 'normal'))
-        self.title.grid(row=0, columnspan=3, column=0, padx=5, pady=5)
+                           font=('Comic Sans MS', 30, 'normal'),
+                           background="Yellow", foreground="Black")
+        self.title.grid(row=1, columnspan=3, column=0, padx=5, pady=5)
         self.word_button = Button(self, text="Hear Word", width=12,
                                   font=('Comic Sans MS', 13, 'normal'),
+                                  background="Black", foreground="Yellow",
+                                  activebackground="Orange",
                                   command=self.hear_word)
-        self.word_button.grid(row=1, column=0, padx=5)
+        self.word_button.grid(row=2, column=0, padx=5)
         self.example_button = Button(self, text="Hear Example", width=12,
                                      font=('Comic Sans MS', 13, 'normal'),
+                                     background="Black", foreground="Yellow",
+                                     activebackground="Orange",
                                      command=self.hear_example)
-        self.example_button.grid(row=2, column=0, padx=5)
+        self.example_button.grid(row=3, column=0, padx=5)
         self.word_entry = Entry(self, font=('Comic Sans MS', 30, 'normal'))
-        self.word_entry.grid(row=1, rowspan=2, column=1, padx=5, pady=5)
+        self.word_entry.grid(row=2, rowspan=2, column=1, padx=5, pady=5)
         self.submit_button = Button(self, text="Submit", command=self.submit,
                                     font=('Comic Sans MS', 13, 'normal'),
+                                    background="Black", foreground="Yellow",
+                                    activebackground="Orange",
                                     width=15)
-        self.submit_button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+        self.submit_button.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
         self.meaning_label = Label(self, font=('Comic Sans MS', 13, 'normal'),
-                                   text="Meaning: %s"%self.current_word[2])
-        self.meaning_label.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
+                                   text="Meaning: %s"%self.current_word[2],
+                                   background="Yellow", foreground="Black",
+                                   wraplength=600)
+        self.meaning_label.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
         self.quit_button = Button(self, text="Quit without saving",
                                   font=('Comic Sans MS', 13, 'normal'),
+                                  background="Black", foreground="Yellow",
+                                  activebackground="Orange",
                                   command=self.quit)
-        self.quit_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
+        self.quit_button.grid(row=6, column=0, columnspan=3, padx=5, pady=5)
         self.get_num_letters = Button(self, text="Hint #1",
                                       font=('Comic Sans MS', 13, 'normal'),
+                                      background="Black", foreground="Yellow",
+                                      activebackground="Orange",
                                       command=self.get_letters)
-        self.get_num_letters.grid(row=1, column=3, padx=5)
+        self.get_num_letters.grid(row=2, column=3, padx=5)
         self.get_starting_letter = Button(self, text="Hint #2",
                                           font=('Comic Sans MS', 13, 'normal'),
+                                          background="Black", foreground="Yellow",
+                                          activebackground="Orange",
                                           command=self.get_starting)
-        self.get_starting_letter.grid(row=2, column=3,padx=5)
+        self.get_starting_letter.grid(row=3, column=3,padx=5)
         self.get_num_letters['state'] = "disabled"
         self.get_starting_letter['state'] = "disabled"
 
@@ -129,6 +148,7 @@ class Game(Frame):
             
 
     def finish_game(self):
+        database.remove_available_list(self.ls[0], self.student[0])
         self.destroy()
         r = ResultsScreen(self.master, self.student, self.result)
         r.pack()
@@ -145,29 +165,45 @@ class ResultsScreen(Frame):
         self.master = master
         self.student = student
         self.results = result
-        Frame.__init__(self, self.master)
+        Frame.__init__(self, self.master, background="Yellow")
         self.calculate_results()
         self.create_widgets()
         self.commit_results()
 
     def create_widgets(self):
-        self.label_one = Label(self, text="Your Results")
+        self.label_one = Label(self, text="Your Results",
+                               font=('Comic Sans MS', 30, 'normal'),
+                               background="Yellow", foreground="Black")
         self.label_one.pack(side=TOP)
-        self.label_two = Label(self, text="Words Spelt: %d"%self.total_words)
+        self.label_two = Label(self, text="Words Spelt: %d"%self.total_words,
+                               font=('Comic Sans MS', 15, 'normal'),
+                               background="Yellow", foreground="Black")
         self.label_two.pack(side=TOP)
         self.label_three = Label(self, 
-                                 text="Words Correct: %d"%self.words_correct)
+                                 text="Words Correct: %d"%self.words_correct,
+                                 font=('Comic Sans MS', 15, 'normal'),
+                                 background="Yellow", foreground="Black")
         self.label_three.pack(side=TOP)
         self.label_four = Label(self,
-                                text="Words Incorrect: %d"%self.words_incorrect)
+                                text="Words Incorrect: %d"%self.words_incorrect,
+                                font=('Comic Sans MS', 15, 'normal'),
+                                background="Yellow", foreground="Black")
         self.label_four.pack(side=TOP)
         self.label_five = Label(self,
-                                text="Percent Correct: %f%%"%self.percent_correct)
+                                text="Percent Correct: %f%%"%self.percent_correct,
+                                font=('Comic Sans MS', 15, 'normal'),
+                                background="Yellow", foreground="Black")
         self.label_five.pack(side=TOP)
         self.label_six = Label(self,
-                               text="Percent Incorrect: %f%%"%self.percent_incorrect)
+                               text="Percent Incorrect: %f%%"%self.percent_incorrect,
+                               font=('Comic Sans MS', 15, 'normal'),
+                               background="Yellow", foreground="Black"
+                               )
         self.label_six.pack(side=TOP)
-        self.home_button = Button(self, text="Return to main", command=self.main)
+        self.home_button = Button(self, text="Return to main", command=self.main,
+                                  font=('Comic Sans MS', 13, 'normal'),
+                                  background="Black", foreground="Yellow",
+                                  activebackground="Orange")
         self.home_button.pack(side=TOP)
 
     def calculate_results(self):
