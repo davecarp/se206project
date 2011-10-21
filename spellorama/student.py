@@ -43,7 +43,7 @@ class StudentInterface(Frame):
         self.highscores_button.grid(row=2, column=0, padx=5, pady=5)
         self.playgame_button = Button(self, image=self.image_game, 
                                       command=self.play_game, height=self.button_height+5,
-                                      background="lime", activebackground="white",
+                                      background="orange", activebackground="white",
                                       width=self.image_game.width()+5)
         self.playgame_button.grid(row=2, column=1, padx=5, pady=5)
         self.practice_button = Button(self, image=self.image_practice, 
@@ -72,8 +72,8 @@ class StudentInterface(Frame):
 
     def practice(self):
         self.destroy()
-        p = Practice(self.master, self.student)
-        p. pack()
+        p = Practice(master=self.master, student=self.student)
+        p.pack()
 
     def play_game(self):
         self.destroy()
@@ -278,7 +278,7 @@ class Practice(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student
-        Frame.__init__(self, self.master, background="Yellow")
+        Frame.__init__(self, self.master, background="skyblue")
         self.words = database.get_incorrect_words(self.student[0])
         if self.words == [] or self.words == None:
             tkMessageBox.showinfo("No words to spell", "You have no previously "
@@ -287,58 +287,72 @@ class Practice(Frame):
             self.destroy()
             s = StudentInterface(self.master, self.student)
             s.pack()
+            return
+        self.initialise_pics()
         self.attempts = 0
         self.word_count = 0
         self.current_word = self.words[self.word_count]
         self.create_widgets()
+
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/practicemode.gif")
+        self.image_hearword = PhotoImage(file="pics/hearword.gif")
+        self.image_hearex = PhotoImage(file="pics/hearexample.gif")
+        self.image_hint1 = PhotoImage(file="pics/hint1.gif")
+        self.image_hint2 = PhotoImage(file="pics/hint2.gif")
+        self.image_submit = PhotoImage(file="pics/submit.gif")
+        self.image_quit = PhotoImage(file="pics/returntomain.gif")
+        self.width=max([self.image_hint1.width(), self.image_hint2.width(),
+                        self.image_hearword.width(), self.image_hearex.width()])+5
+        self.height=max([self.image_hearword.height(), self.image_hearex.height(),
+                         self.image_hint1.height(), self.image_hint2.height()])+5,    
        
     def create_widgets(self):
-        self.title = Label(self, text="Word #1", 
+        self.header = Label(self, image=self.image_title,
+                            background="skyblue")
+        self.header.image = self.image_title
+        self.header.grid(row=0, column=0, columnspan=30, padx=5, pady=5, sticky=W+E)
+        self.title = Label(self, text="Word #1 out of %s"%str(len(self.words)), 
                            font=('Comic Sans MS', 30, 'normal'),
-                           background="Yellow", foreground="Black")
-        self.title.grid(row=0, columnspan=3, column=0, padx=5, pady=5)
-        self.word_button = Button(self, text="Hear Word", width=12,
-                                  font=('Comic Sans MS', 13, 'normal'),
-                                  command=self.hear_word,
-                                  background="Black", foreground="Yellow",
-                                  activebackground="Orange")
-        self.word_button.grid(row=1, column=0, padx=5)
-        self.example_button = Button(self, text="Hear Example", width=12,
-                                     font=('Comic Sans MS', 13, 'normal'),
-                                     command=self.hear_example,
-                                     background="Black", foreground="Yellow",
-                                     activebackground="Orange")
-        self.example_button.grid(row=2, column=0, padx=5)
+                           background="skyblue", foreground="Black")
+        self.title.grid(row=1, columnspan=30, column=0, padx=5, pady=5, sticky=W+E)
+        self.word_button = Button(self, image=self.image_hearword, width=self.width,
+                                  command=self.hear_word, height=self.height,
+                                  background="orange", activebackground="white")
+        self.word_button.image = self.image_hearword
+        self.word_button.grid(row=2, column=0, padx=5)
+        self.example_button = Button(self, image=self.image_hearex, width=self.width,
+                                     command=self.hear_example, height = self.height,
+                                     background="orange", activebackground="white")
+        self.example_button.image = self.image_hearex
+        self.example_button.grid(row=3, column=0, padx=5)
         self.word_entry = Entry(self, font=('Comic Sans MS', 30, 'normal'))
-        self.word_entry.grid(row=1, rowspan=2, column=1, padx=5, pady=5)
-        self.submit_button = Button(self, text="Submit", command=self.submit,
-                                    font=('Comic Sans MS', 13, 'normal'),
-                                    width=15,
-                                    background="Black", foreground="Yellow",
-                                    activebackground="Orange")
-        self.submit_button.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+        self.word_entry.grid(row=2, rowspan=2, column=1, padx=5, pady=5)
+        self.submit_button = Button(self, image=self.image_submit, command=self.submit,
+                                    background="orange", activebackground="white")
+        self.submit_button.image = self.image_submit
+        self.submit_button.grid(row=4, column=1, padx=5, pady=5)
         self.meaning_label = Label(self, font=('Comic Sans MS', 13, 'normal'),
-                                   text="Meanging: Blah Blah Blob of bro",
-                                   background="Yellow")
-        self.meaning_label.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
-        self.quit_button = Button(self, text="Meaning: %s"%self.current_word[2],
-                                  font=('Comic Sans MS', 13, 'normal'),
-                                  background="Black", foreground="Yellow",
-                                  activebackground="Orange",
+                                   text="Meaning: %s"%self.current_word[2],
+                                   background="skyblue", foreground="black",
+                                   wraplength=600)
+        self.meaning_label.grid(row=5, column=0, columnspan=30, padx=5, pady=5)
+        self.quit_button = Button(self, image=self.image_quit,
+                                  background="orange", activebackground="white",
                                   command=self.quit)
-        self.quit_button.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
-        self.get_num_letters = Button(self, text="Hint #1",
-                                      font=('Comic Sans MS', 13, 'normal'),
-                                      background="Black", foreground="Yellow",
-                                      activebackground="Orange",
+        self.quit_button.image = self.image_quit
+        self.quit_button.grid(row=6, column=0, columnspan=30, padx=5, pady=5)
+        self.get_num_letters = Button(self, image=self.image_hint1,
+                                      background="orange", activebackground="white",
+                                      height=self.height, width=self.width,
                                       command=self.get_letters)
-        self.get_num_letters.grid(row=1, column=3, padx=5)
-        self.get_starting_letter = Button(self, text="Hint #2",
-                                          font=('Comic Sans MS', 13, 'normal'),
-                                          background="Black", foreground="Yellow",
-                                          activebackground="Orange",
+        self.get_num_letters.image = self.image_hint1
+        self.get_num_letters.grid(row=2, column=3, padx=5)
+        self.get_starting_letter = Button(self, image=self.image_hint2,
+                                          background="orange", activebackground="white",
+                                          width=self.width, height=self.height,
                                           command=self.get_starting)
-        self.get_starting_letter.grid(row=2, column=3,padx=5)
+        self.get_starting_letter.grid(row=3, column=3,padx=5)
         self.get_num_letters['state'] = "disabled"
         self.get_starting_letter['state'] = "disabled"
 
@@ -431,7 +445,7 @@ class Practice(Frame):
 
     def quit(self):
         self.destroy()
-        s = student.StudentInterface(self.master, self.student)
+        s = StudentInterface(self.master, self.student)
         s.pack()
 
 
