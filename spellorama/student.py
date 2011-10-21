@@ -13,46 +13,57 @@ class StudentInterface(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student        
-        Frame.__init__(self, self.master, background="Yellow")
+        Frame.__init__(self, self.master, background="skyblue")
+        self.initialise_pics()
         self.create_widgets()
     
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/welcome_header.gif")
+        self.image_highscores = PhotoImage(file="pics/viewhighscores.gif")
+        self.image_game = PhotoImage(file="pics/playthegame.gif")
+        self.image_practice = PhotoImage(file="pics/practice.gif")
+        self.image_logout = PhotoImage(file="pics/logout.gif")
+        self.button_height = max([self.image_highscores.height(), self.image_game.height(), 
+                                  self.image_practice.height(), self.image_logout.height()])
+
     def create_widgets(self):
-        self.welcome = Label(self, text="Welcome back, %s" % self.student[1],
+
+        label_title = Label(self, image=self.image_title, background="skyblue")
+        label_title.image = self.image_title
+        label_title.grid(row=0, column=0, columnspan=3,padx=10)
+
+        self.welcome = Label(self, text="Nice to see you again, %s" % self.student[1],
                              font=('Comic Sans MS', 35, 'normal'),
-                             background="Yellow", foreground="Black")
-        self.welcome.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
-        self.highscores_button = Button(self, text="View High Scores",
-                                        command=self.high_scores,
-                                        font=('Comic Sans MS', 18, 'normal'),
-                                        background="Black", foreground="Yellow",
-                                        activebackground="Orange")
-        self.highscores_button.grid(row=1, column=0, padx=5, pady=5)
-        self.playgame_button = Button(self, text="Play the game", 
-                                      command=self.play_game,
-                                      font=('Comic Sans MS', 18, 'normal'),
-                                      background="Black", foreground="Yellow",
-                                      activebackground="Orange")
-        self.playgame_button.grid(row=1, column=1, padx=5, pady=5)
-        self.practice_button = Button(self, text="Practice", 
-                                      command=self.practice,
-                                      font=('Comic Sans MS', 18, 'normal'),
-                                      background="Black", foreground="Yellow",
-                                      activebackground="Orange")
-        self.practice_button.grid(row=1, column=2, padx=5, pady=5)
-        self.logout_button = Button(self, text="Log out", command=self.logout,
-                                    font=('Comic Sans MS', 20, 'normal'),
-                                    background="Black", foreground="Yellow",
-                                    activebackground="Orange",
-                                    width=20)
+                             background="skyblue", foreground="Black")
+        self.welcome.grid(row=1, column=0, columnspan=3, padx=5, pady=5)
+        self.highscores_button = Button(self, image=self.image_highscores,
+                                        command=self.high_scores, height=self.button_height+5,
+                                        width=self.image_highscores.width()+5,
+                                        background="orange", activebackground="white")
+        self.highscores_button.grid(row=2, column=0, padx=5, pady=5)
+        self.playgame_button = Button(self, image=self.image_game, 
+                                      command=self.play_game, height=self.button_height+5,
+                                      background="lime", activebackground="white",
+                                      width=self.image_game.width()+5)
+        self.playgame_button.grid(row=2, column=1, padx=5, pady=5)
+        self.practice_button = Button(self, image=self.image_practice, 
+                                      command=self.practice, height=self.button_height+5,
+                                      background="orange", activebackground="white",
+                                      width=self.image_practice.width()+5)
+        self.practice_button.grid(row=2, column=2, padx=5, pady=5)
+        self.logout_button = Button(self, image=self.image_logout, command=self.logout,
+                                    background="orange", activebackground="white",
+                                    height=self.button_height+5,
+                                    width=self.image_logout.width()+5)
         self.label = Label(self, text="'View High Scores' allows you to see "
                            "the best spellers in your class and how you "
                            "compare.\n 'Play the game' lets you spell lists "
                            "that your teacher has set for you.\n 'Practice' "
                            "lets you have another go at words you spelt "
-                           "incorrectly in game mode", background="Yellow",
+                           "incorrectly in game mode", background="skyblue",
                            foreground="Black", font=('Comic Sans MS', 18, 'normal'))
-        self.label.grid(row=2, column=0, columnspan=3, padx=5, pady=5)
-        self.logout_button.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
+        self.label.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
+        self.logout_button.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
 
     def logout(self):
         self.destroy()
@@ -79,29 +90,35 @@ class PlayGame(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student
-        Frame.__init__(self, self.master, background="Yellow")
+        Frame.__init__(self, self.master, background="skyblue")
         self.avail = database.get_available_lists(self.student[0])
+        self.initialise_pics()
         self.create_widgets()
 
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/selectalist_header.gif")
+        self.image_cancel = PhotoImage(file="pics/cancel.gif")
+        self.image_start = PhotoImage(file="pics/start.gif")
     def create_widgets(self):
+        label_title = Label(self, image=self.image_title, background="skyblue")
+        label_title.image = self.image_title
+        label_title.grid(row=0, column=0, columnspan=2,padx=10)
         self.l = Label(self, text="Your teacher has made the \nfollowing lists " +
                                    "available to you.\n Select one and hit Start " 
                                    "to begin.", font=('Comic Sans MS', 20, 'normal'),
-                                    background="Yellow", foreground="Black")
-        self.l.grid(row=0, columnspan=2, column=0, padx=5, pady=5)
+                                    background="skyblue", foreground="Black")
+        self.l.grid(row=1, columnspan=2, column=0, padx=5, pady=5)
         self.lister = teacher.ScrollingListBox(master=self)
-        self.lister.grid(row=1, columnspan=2, column=0, padx=5, pady=5)
-        self.cancel_button = Button(self, text="Return to main menu",
+        self.lister.grid(row=2, columnspan=2, column=0, padx=5, pady=5)
+        self.cancel_button = Button(self, image=self.image_cancel,
                                     command=self.cancel,
-                                    font=('Comic Sans MS', 15, 'normal'),
-                                    background="Black", foreground="Yellow",
-                                    activebackground="Orange")
-        self.cancel_button.grid(row=2, column=0, padx=5, pady=5)
-        self.start_button = Button(self, text="Start!", command=self.start,
-                                   font=('Comic Sans MS', 15, 'normal'),
-                                   background="Black", foreground="Yellow",
-                                   activebackground="Orange")
-        self.start_button.grid(row=2, column=1, padx=5, pady=5)
+                                    background="orange", activebackground="white")
+        self.cancel_button.image = self.image_cancel
+        self.cancel_button.grid(row=3, column=0, padx=5, pady=5)
+        self.start_button = Button(self, image=self.image_start, command=self.start,
+                                   background="orange", activebackground="white")
+        self.start_button.image = self.image_start
+        self.start_button.grid(row=3, column=1, padx=5, pady=5)
         for l in self.avail:
             self.lister.listbox.insert(END, l[1])
         self.start_button['state'] = "disabled"
@@ -128,83 +145,88 @@ class HighScores(Frame):
     def __init__(self, master, student):
         self.master = master
         self.student = student
-        Frame.__init__(self, self.master, background="Yellow")
+        Frame.__init__(self, self.master, background="skyblue")
         self.create_widgets()
         self.generate_scores(student=self.student)
         self.display_scores()
 
     def create_widgets(self):
-        self.heading = Label(self, text='High Scores', background="Yellow", foreground="Black",
-                             font=('Comic Sans MS', 40, 'normal'))
+        self.image_title = PhotoImage(file="pics/highscores_header.gif")
+        self.heading = Label(self, image=self.image_title, background="skyblue")
+        self.heading.image = self.image_title
         self.heading.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
         self.most_words_heading = Label(self, text='Most Words',
-                                        background="Yellow", foreground="Black",
+                                        background="skyblue", foreground="Black",
                                         font=('Comic Sans MS', 15, 'normal'))
-        self.most_words_heading.grid(row=1, column=0, padx=5, pady=5)
-        self.most_words_first = Label(self,  background="Yellow", foreground="Black",
+        self.most_words_heading.grid(row=1, column=0, padx=5, pady=5, sticky=W)
+        self.most_words_first = Label(self,  background="skyblue", foreground="Black",
                                       font=('Comic Sans MS', 15, 'normal'))
-        self.most_words_first.grid(row=1, column=1, padx=5, pady=5)
-        self.most_words_second = Label(self,  background="Yellow", foreground="Black",
+        self.most_words_first.grid(row=1, column=1, padx=5, pady=5, sticky=W)
+        self.most_words_second = Label(self,  background="skyblue", foreground="Black",
                                        font=('Comic Sans MS', 15, 'normal'))
-        self.most_words_second.grid(row=2, column=1, padx=5, pady=5)
-        self.most_words_third = Label(self,  background="Yellow", foreground="Black",
+        self.most_words_second.grid(row=2, column=1, padx=5, pady=5, sticky=W)
+        self.most_words_third = Label(self,  background="skyblue", foreground="Black",
                                       font=('Comic Sans MS', 15, 'normal'))
-        self.most_words_third.grid(row=3, column=1, padx=5, pady=5)
+        self.most_words_third.grid(row=3, column=1, padx=5, pady=5, sticky=W)
         self.correct_words_heading = Label(self, text="Most Correct Words",
-                                           background="Yellow", foreground="Black",
+                                           background="skyblue", foreground="Black",
                                            font=('Comic Sans MS', 15, 'normal'))
-        self.correct_words_heading.grid(row=4, column=0,
-                                        padx=5, pady=5)
-        self.correct_words_first = Label(self, background="Yellow", foreground="Black",
+        self.correct_words_heading.grid(row=4, column=0, padx=5, pady=5, sticky=W)
+        self.correct_words_first = Label(self, background="skyblue", foreground="Black",
                                          font=('Comic Sans MS', 15, 'normal'))
-        self.correct_words_first.grid(row=4, column=1, padx=5, pady=5)
-        self.correct_words_second = Label(self, background="Yellow", foreground="Black",
+        self.correct_words_first.grid(row=4, column=1, padx=5, pady=5, sticky=W)
+        self.correct_words_second = Label(self, background="skyblue", foreground="Black",
                                           font=('Comic Sans MS', 15, 'normal'))
-        self.correct_words_second.grid(row=5, column=1, padx=5, pady=5)
-        self.correct_words_third = Label(self, background="Yellow", foreground="Black",
+        self.correct_words_second.grid(row=5, column=1, padx=5, pady=5, sticky=W)
+        self.correct_words_third = Label(self, background="skyblue", foreground="Black",
                                          font=('Comic Sans MS', 15, 'normal'))  
-        self.correct_words_third.grid(row=6, column=1, padx=5, pady=5)
+        self.correct_words_third.grid(row=6, column=1, padx=5, pady=5, sticky=W)
         self.percent_correct_heading = Label(self, 
                                              text="Highest Percent Correct",
-                                             background="Yellow", foreground="Black",
+                                             background="skyblue", foreground="Black",
                                              font=('Comic Sans MS', 15, 'normal'))
-        self.percent_correct_heading.grid(row=7, column=0, padx=5, pady=5)
-        self.percent_correct_first = Label(self, background="Yellow", foreground="Black",
+        self.percent_correct_heading.grid(row=7, column=0, padx=5, pady=5, sticky=W)
+        self.percent_correct_first = Label(self, background="skyblue", foreground="Black",
                                            font=('Comic Sans MS', 15, 'normal'))
-        self.percent_correct_first.grid(row=7, column=1, padx=5, pady=5)
-        self.percent_correct_second = Label(self, background="Yellow", foreground="Black",
+        self.percent_correct_first.grid(row=7, column=1, padx=5, pady=5, sticky=W)
+        self.percent_correct_second = Label(self, background="skyblue", foreground="Black",
                                             font=('Comic Sans MS', 15, 'normal'))
-        self.percent_correct_second.grid(row=8, column=1, padx=5, pady=5)
-        self.percent_correct_third = Label(self, background="Yellow", foreground="Black",
+        self.percent_correct_second.grid(row=8, column=1, padx=5, pady=5, sticky=W)
+        self.percent_correct_third = Label(self, background="skyblue", foreground="Black",
                                            font=('Comic Sans MS', 15, 'normal'))
-        self.percent_correct_third.grid(row=9, column=1, padx=5, pady=5)
+        self.percent_correct_third.grid(row=9, column=1, padx=5, pady=5, sticky=W)
         self.you_most_words = Label(self, text="Your Rank",
-                                    background="Yellow", foreground="Black",
+                                    background="skyblue", foreground="Black",
                                     font=('Comic Sans MS', 15, 'normal')) 
         self.you_most_words.grid(row=1, column=2, padx=5, pady=5)
         self.you_correct_words = Label(self, text="Your Rank",
-                                       background="Yellow", foreground="Black",
+                                       background="skyblue", foreground="Black",
                                        font=('Comic Sans MS', 15, 'normal'))
         self.you_correct_words.grid(row=4, column=2, padx=5, pady=5)
         self.you_percent_correct = Label(self, text="Your Rank",
-                                         background="Yellow", foreground="Black",
+                                         background="skyblue", foreground="Black",
                                          font=('Comic Sans MS', 15, 'normal'))
         self.you_percent_correct.grid(row=7, column=2, padx=5, pady=5)
         self.rank_most_words = Label(self, background="Black", foreground="Yellow",
-                                     font=('Comic Sans MS', 30, 'normal'))
+                                     font=('Comic Sans MS', 30, 'normal'),
+                                     width=3)
         self.rank_correct_words = Label(self, background="Black", foreground="Yellow",
-                                        font=('Comic Sans MS', 30, 'normal'))
+                                        font=('Comic Sans MS', 30, 'normal'),
+                                        width=3)
         self.rank_percent_correct = Label(self, background="Black", foreground="Yellow",
-                                          font=('Comic Sans MS', 30, 'normal'))
+                                          font=('Comic Sans MS', 30, 'normal'),
+                                          width=3)
         self.rank_most_words.grid(row=2, rowspan=2, column=2, padx=5, pady=5)
         self.rank_correct_words.grid(row=5, rowspan=2, column=2, padx=5, pady=5)
         self.rank_percent_correct.grid(row=8, rowspan=2, column=2, padx=5, 
-                                       pady=5)     
-        self.return_button = Button(self, text="Return to Main",
-                                    command=self.main, width=20,
-                                    background="Black", foreground="Yellow",
-                                    activebackground="Orange",
-                                    font=('Comic Sans MS', 15 , 'normal'))
+                                       pady=5)
+        self.image_main = PhotoImage(file="pics/returntomain.gif")     
+        self.return_button = Button(self, image=self.image_main,
+                                    command=self.main,
+                                    background="orange", activebackground="white",
+                                    width=self.image_main.width()+10,
+                                    height=self.image_main.height()+10)
+        self.return_button.image = self.image_main
         self.return_button.grid(row=10, column=0, columnspan=3, padx=5, pady=5)        
         
     def main(self):
@@ -223,9 +245,9 @@ class HighScores(Frame):
         for l in ([self.by_words_spelt, self.by_words_correct,
                    self.by_percent_correct]):
             l.reverse()
-        self.student_ratings = [(self.by_words_spelt.index(student)+1),
-                                (self.by_words_correct.index(student)+1),
-                                (self.by_percent_correct.index(student)+1)]
+        self.student_ratings = [(self.by_words_spelt.index(self.student)+1),
+                                (self.by_words_correct.index(self.student)+1),
+                                (self.by_percent_correct.index(self.student)+1)]
         
         
     def display_scores(self):
@@ -265,11 +287,11 @@ class Practice(Frame):
             self.destroy()
             s = StudentInterface(self.master, self.student)
             s.pack()
-        self.create_widgets()
         self.attempts = 0
         self.word_count = 0
         self.current_word = self.words[self.word_count]
-        
+        self.create_widgets()
+       
     def create_widgets(self):
         self.title = Label(self, text="Word #1", 
                            font=('Comic Sans MS', 30, 'normal'),
@@ -363,7 +385,6 @@ class Practice(Frame):
                 self.get_starting_letter['state'] = "disabled"
                 self.meaning_label['text'] = "Meaning: %s"%self.current_word[2]
                 return
-        self.result.append(0)
         self.attempts += 1
         if self.attempts == 1:
             tkMessageBox.showinfo("Word Incorrect", "You spelt the word "

@@ -11,64 +11,75 @@ class Game(Frame):
         self.student = student
         self.ls = ls
         self.words = database.get_words_from_file(ls[0])
-        Frame.__init__(self, self.master, background="Yellow")
+        Frame.__init__(self, self.master, background="skyblue")
         self.attempts = 0
         self.word_count = 0
         self.current_word = self.words[self.word_count]
         self.result = []
+        self.initialise_pics()
         self.create_widgets()
 
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/SpellingBee_Black.gif")
+        self.image_hearword = PhotoImage(file="pics/hearword.gif")
+        self.image_hearex = PhotoImage(file="pics/hearexample.gif")
+        self.image_hint1 = PhotoImage(file="pics/hint1.gif")
+        self.image_hint2 = PhotoImage(file="pics/hint2.gif")
+        self.image_submit = PhotoImage(file="pics/submit.gif")
+        self.image_quit = PhotoImage(file="pics/returntomain.gif")
+        self.width=max([self.image_hint1.width(), self.image_hint2.width(),
+                        self.image_hearword.width(), self.image_hearex.width()])+5
+        self.height=max([self.image_hearword.height(), self.image_hearex.height(),
+                         self.image_hint1.height(), self.image_hint2.height()])+5,
+
     def create_widgets(self):
-        self.header = Label(self, text="The DC Spelling Bee",
-                            font=('Comic Sans MS', 50, 'normal'),
-                            background="Yellow", foreground="Black")
-        self.header.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
-        self.title = Label(self, text="Word #1", 
+        self.header = Label(self, image=self.image_title,
+                            background="skyblue")
+        self.header.image = self.image_title
+        self.header.grid(row=0, column=0, columnspan=30, padx=5, pady=5, sticky=W+E)
+        self.title = Label(self, text="Word #1 out of %s"%str(len(self.words)), 
                            font=('Comic Sans MS', 30, 'normal'),
-                           background="Yellow", foreground="Black")
-        self.title.grid(row=1, columnspan=3, column=0, padx=5, pady=5)
-        self.word_button = Button(self, text="Hear Word", width=12,
-                                  font=('Comic Sans MS', 13, 'normal'),
-                                  background="Black", foreground="Yellow",
-                                  activebackground="Orange",
+                           background="skyblue", foreground="Black")
+        self.title.grid(row=1, columnspan=30, column=0, padx=5, pady=5, sticky=W+E)
+        self.word_button = Button(self, image=self.image_hearword,
+                                  background="orange", activebackground="white",
+                                  height=self.height, width=self.width,
                                   command=self.hear_word)
+        self.word_button.image = self.image_hearword
         self.word_button.grid(row=2, column=0, padx=5)
-        self.example_button = Button(self, text="Hear Example", width=12,
-                                     font=('Comic Sans MS', 13, 'normal'),
-                                     background="Black", foreground="Yellow",
-                                     activebackground="Orange",
+        self.example_button = Button(self, image=self.image_hearex,
+                                     height=self.height, width=self.width,
+                                     background="orange", activebackground="white",
                                      command=self.hear_example)
+        self.example_button.image = self.image_hearex
         self.example_button.grid(row=3, column=0, padx=5)
         self.word_entry = Entry(self, font=('Comic Sans MS', 30, 'normal'))
         self.word_entry.grid(row=2, rowspan=2, column=1, padx=5, pady=5)
-        self.submit_button = Button(self, text="Submit", command=self.submit,
-                                    font=('Comic Sans MS', 13, 'normal'),
-                                    background="Black", foreground="Yellow",
-                                    activebackground="Orange",
-                                    width=15)
-        self.submit_button.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
+        self.submit_button = Button(self, image=self.image_submit, command=self.submit,
+                                    background="orange", activebackground="white")
+        self.submit_button.image = self.image_submit
+        self.submit_button.grid(row=4, column=1, padx=5, pady=5)
         self.meaning_label = Label(self, font=('Comic Sans MS', 13, 'normal'),
                                    text="Meaning: %s"%self.current_word[2],
-                                   background="Yellow", foreground="Black",
+                                   background="skyblue", foreground="Black",
                                    wraplength=600)
-        self.meaning_label.grid(row=5, column=0, columnspan=3, padx=5, pady=5)
-        self.quit_button = Button(self, text="Quit without saving",
-                                  font=('Comic Sans MS', 13, 'normal'),
-                                  background="Black", foreground="Yellow",
-                                  activebackground="Orange",
+        self.meaning_label.grid(row=5, column=0, columnspan=30, padx=5, pady=5)
+        self.quit_button = Button(self, image=self.image_quit,
+                                  background="orange", activebackground="white",
                                   command=self.quit)
-        self.quit_button.grid(row=6, column=0, columnspan=3, padx=5, pady=5)
-        self.get_num_letters = Button(self, text="Hint #1",
-                                      font=('Comic Sans MS', 13, 'normal'),
-                                      background="Black", foreground="Yellow",
-                                      activebackground="Orange",
+        self.quit_button.image = self.image_quit
+        self.quit_button.grid(row=6, column=0, columnspan=30, padx=5, pady=5)
+        self.get_num_letters = Button(self, image=self.image_hint1,
+                                      height=self.height, width=self.width,
+                                      background="orange", activebackground="white",
                                       command=self.get_letters)
+        self.get_num_letters.image = self.image_hint1
         self.get_num_letters.grid(row=2, column=3, padx=5)
-        self.get_starting_letter = Button(self, text="Hint #2",
-                                          font=('Comic Sans MS', 13, 'normal'),
-                                          background="Black", foreground="Yellow",
-                                          activebackground="Orange",
+        self.get_starting_letter = Button(self, image=self.image_hint2,
+                                          height=self.height, width=self.width,
+                                          background="orange", activebackground="white",
                                           command=self.get_starting)
+        self.get_starting_letter.image = self.image_hint1
         self.get_starting_letter.grid(row=3, column=3,padx=5)
         self.get_num_letters['state'] = "disabled"
         self.get_starting_letter['state'] = "disabled"
@@ -106,19 +117,20 @@ class Game(Frame):
                 return
             else:
                 self.current_word = self.words[self.word_count]
-                self.title['text'] = "Word #%d" % (self.word_count +1)
+                self.title['text'] = "Word #%d out of %s" % (self.word_count +1, str(len(self.words)))
                 self.get_num_letters['state'] = "disabled"
                 self.get_starting_letter['state'] = "disabled"
                 self.meaning_label['text'] = "Meaning: %s"%self.current_word[2]
+                self.attempts = 0
                 return
-        self.result.append(0)
-        database.add_incorrect_word(self.student[0], self.current_word[0])
         self.attempts += 1
         if self.attempts == 1:
             tkMessageBox.showinfo("Word Incorrect", "You spelt the word "
                                   "incorrectly this time. Hint #1 is now "
                                   "available. Have another go.")
             self.get_num_letters['state'] = "active"
+            self.result.append(0)
+            database.add_incorrect_word(self.student[0], self.current_word[0])
             return
         if self.attempts == 2:
             tkMessageBox.showinfo("Word Incorrect", "You spelt the word "
@@ -142,7 +154,7 @@ class Game(Frame):
                 self.attempts = 0
                 self.get_num_letters['state'] = "disabled"
                 self.get_starting_letter['state'] = "disabled"
-                self.title['text'] = "Word #%d" % (self.word_count +1)
+                self.title['text'] = "Word #%d out of %s" % (self.word_count +1, str(len(self.words)))
                 self.meaning_label['text'] = "Meaning: %s"%self.current_word[2]
                 return
             
@@ -226,5 +238,6 @@ class ResultsScreen(Frame):
         new_percenti = 100-new_percentc
         database.update_users_scores(new_total, new_correct, new_incorrect,
                                      new_percentc, new_percenti, self.student[0])
+        self.student = database.update_student(self.student[0])
 
 

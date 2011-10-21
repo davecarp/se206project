@@ -173,12 +173,16 @@ def get_student(username):
     return sql("""select * from users where username=?;""", (username,)).fetchone()
 
 def add_incorrect_word(user_ID, word_ID):
-        
-    if not sql("""select * from incorrectWords where user_ID=? and word_ID=?;""",
-               (user_ID, word_ID)):    
+    
+
+    print "user_ID = %s ___ word_ID = %s"%(user_ID, word_ID)   
+    if not list(sql("""select * from incorrectWords where user_ID=? and word_ID=?;""",
+               (user_ID, word_ID))):    
         with db:
             sql("""insert into incorrectWords (user_ID, word_ID) values (?,?);""",
                 (user_ID, word_ID))
+            print "Word added" 
+        
 
 def get_incorrect_words(user_ID):
 
@@ -205,7 +209,9 @@ def update_users_scores(words_t, words_c, words_i, per_c, per_i, userID):
             words_incorrect=?, percent_correct=?, percent_incorrect=? where
             user_ID=?;""", (words_t, words_c, words_i, per_c, per_i, userID))
 
-        
+def update_student(list_ID):
+
+    return sql("""select * from users where user_ID=?;""", (list_ID,)).fetchone()
     
         
 
