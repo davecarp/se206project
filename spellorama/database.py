@@ -1,4 +1,5 @@
 import sqlite3 
+""" This class defines the methods used in calls to the database. """
 
 def sql(query, params=()):
     """ Run a sql query and return the result. """
@@ -136,15 +137,18 @@ def get_words_from_file(list_ID):
     return result
         
 def get_word_id(word, defin, ex, diff):
+    """ Gets the ID numnber of a word given its properties. """
         
     return sql("""select * from wordIdent where "word"=? and "meaning"=? and "example"=?
                and "difficulty"=?;""", (word, defin, ex, diff))
 
 def get_lists():
+    """ Gets all the list ID's from the database. """
 	
     return list(sql("""select * from listIdent;"""))
 
 def get_available_lists(userID):
+    """ Gets all the lists that ares available to the student to test. """
 
     list_IDs = sql("""select list_ID from availableLists where user_ID=?;""",
                    (userID,))
@@ -157,34 +161,37 @@ def get_available_lists(userID):
     return list(result)
 
 def add_available_list(list_ID, user_ID):
+    """ Adds a list to the lists available to the student. """
     
     with db:
         sql("""insert into availableLists (list_ID, user_ID) values (?, ?);""",
             (list_ID, user_ID))
 
 def remove_available_list(list_ID, user_ID):
+    """ Removes a list from the lists available to the student. """
 
     with db:
         sql("""delete from availableLists where list_ID=? and user_ID=?;""", 
             (list_ID, user_ID))
 
 def get_student(username):
+    """ Gets the properties of a student given the students username. """
 
     return sql("""select * from users where username=?;""", (username,)).fetchone()
 
 def add_incorrect_word(user_ID, word_ID):
+    """ Adds an incorrect word to a student when given the student and lists IDs. """
     
-
-    print "user_ID = %s ___ word_ID = %s"%(user_ID, word_ID)   
     if not list(sql("""select * from incorrectWords where user_ID=? and word_ID=?;""",
                (user_ID, word_ID))):    
         with db:
             sql("""insert into incorrectWords (user_ID, word_ID) values (?,?);""",
                 (user_ID, word_ID))
-            print "Word added" 
+
         
 
 def get_incorrect_words(user_ID):
+    """ Gets all the incorrect lists for a student given their ID number. """
 
     word_IDs = sql("""select word_ID from incorrectWords where user_ID=?;""",
                    (user_ID,))
@@ -197,12 +204,14 @@ def get_incorrect_words(user_ID):
     return list(result)
 
 def remove_incorrect_word(user_ID, word_ID):
+    """ Removes a word from the incorrect words of a student given the students ID number. """
 
     with db:
         sql("""delete from incorrectWords where user_ID=? and word_ID=?;""",
             (user_ID, word_ID))
 
 def update_users_scores(words_t, words_c, words_i, per_c, per_i, userID):
+    """ Updates the users information at the end of a list. """
 
     with db:
         sql("""update users set words_spelt=?, words_correct=?,
@@ -210,18 +219,11 @@ def update_users_scores(words_t, words_c, words_i, per_c, per_i, userID):
             user_ID=?;""", (words_t, words_c, words_i, per_c, per_i, userID))
 
 def update_student(list_ID):
+    """ Gets th updated information of a student. """
 
     return sql("""select * from users where user_ID=?;""", (list_ID,)).fetchone()
     
         
-
-
    
-      
-
-
-
-
-    
 db = sqlite3.connect("spelloramadatabase.db")
 

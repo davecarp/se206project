@@ -5,6 +5,7 @@ import os
 import tkMessageBox
 
 class Game(Frame):
+    """ Defines the interface and the methods for the main game screen. """
 
     def __init__(self, master, student, ls):
         self.master = master
@@ -20,6 +21,7 @@ class Game(Frame):
         self.create_widgets()
 
     def initialise_pics(self):
+        """ Initialises the images to be used on the buttons and title. """
         self.image_title = PhotoImage(file="pics/SpellingBee_Black.gif")
         self.image_hearword = PhotoImage(file="pics/hearword.gif")
         self.image_hearex = PhotoImage(file="pics/hearexample.gif")
@@ -33,6 +35,7 @@ class Game(Frame):
                          self.image_hint1.height(), self.image_hint2.height()])+5,
 
     def create_widgets(self):
+        """ Creates and packs the widgets. """
         self.header = Label(self, image=self.image_title,
                             background="skyblue")
         self.header.image = self.image_title
@@ -85,24 +88,29 @@ class Game(Frame):
         self.get_starting_letter['state'] = "disabled"
 
     def hear_word(self):
+        """ Plays the word when the 'Hear Word' button is pressed. """
         word = self.current_word[1]
         os.system("echo %s | festival --tts" % (word))
 
     def hear_example(self):
+        """ Plays the example when the 'Hear Example' button is pressed. """
         example = self.current_word[3]
         os.system("echo %s | festival --tts" % (example))
 
     def get_letters(self):
+        """ Shows the number of letters in the word when the hint #1 button is pressed. """
         number = str(len(self.current_word[1]))
         tkMessageBox.showinfo("Number of letters", "There are %s letters in "
                               "the word you are trying to spell"%(number,))
         
     def get_starting(self):
+        """ Shows the starting letter in the word when the hint #1 button is pressed. """
         starting = str(self.current_word[1][0])
         tkMessageBox.showinfo("Starting letter", "The word that you are "
                               "trying to spell begins with an '%s'"%(starting,))
        
     def submit(self):
+        """ Method called when the submit button is pressed. """
         entered = self.word_entry.get()
         self.word_entry.delete(0, END)
         if self.current_word[1] == entered:
@@ -160,6 +168,7 @@ class Game(Frame):
             
 
     def finish_game(self):
+        """ Method called when all words in the list have been spelt. """
         database.remove_available_list(self.ls[0], self.student[0])
         self.destroy()
         r = ResultsScreen(self.master, self.student, self.result)
@@ -167,6 +176,7 @@ class Game(Frame):
 
 
     def quit(self):
+        """ Method called when the quit button is pressed. """
         self.destroy()
         s = student.StudentInterface(self.master, self.student)
         s.pack()
@@ -177,45 +187,49 @@ class ResultsScreen(Frame):
         self.master = master
         self.student = student
         self.results = result
-        Frame.__init__(self, self.master, background="Yellow")
+        Frame.__init__(self, self.master, background="skyblue")
+        self.initialise_pics()
         self.calculate_results()
         self.create_widgets()
         self.commit_results()
 
+    def initialise_pics(self):
+        self.image_title = PhotoImage(file="pics/results.gif")
+        self.image_quit = PhotoImage(file="pics/returntomain.gif")
+
     def create_widgets(self):
-        self.label_one = Label(self, text="Your Results",
-                               font=('Comic Sans MS', 30, 'normal'),
-                               background="Yellow", foreground="Black")
+        self.label_one = Label(self, image=self.image_title,
+                               background="skyblue")
+        self.label_one.image = self.image_title
         self.label_one.pack(side=TOP)
         self.label_two = Label(self, text="Words Spelt: %d"%self.total_words,
                                font=('Comic Sans MS', 15, 'normal'),
-                               background="Yellow", foreground="Black")
+                               background="skyblue", foreground="Black")
         self.label_two.pack(side=TOP)
         self.label_three = Label(self, 
                                  text="Words Correct: %d"%self.words_correct,
                                  font=('Comic Sans MS', 15, 'normal'),
-                                 background="Yellow", foreground="Black")
+                                 background="skyblue", foreground="Black")
         self.label_three.pack(side=TOP)
         self.label_four = Label(self,
                                 text="Words Incorrect: %d"%self.words_incorrect,
                                 font=('Comic Sans MS', 15, 'normal'),
-                                background="Yellow", foreground="Black")
+                                background="skyblue", foreground="Black")
         self.label_four.pack(side=TOP)
         self.label_five = Label(self,
                                 text="Percent Correct: %f%%"%self.percent_correct,
                                 font=('Comic Sans MS', 15, 'normal'),
-                                background="Yellow", foreground="Black")
+                                background="skyblue", foreground="Black")
         self.label_five.pack(side=TOP)
         self.label_six = Label(self,
                                text="Percent Incorrect: %f%%"%self.percent_incorrect,
                                font=('Comic Sans MS', 15, 'normal'),
-                               background="Yellow", foreground="Black"
+                               background="skyblue", foreground="Black"
                                )
         self.label_six.pack(side=TOP)
-        self.home_button = Button(self, text="Return to main", command=self.main,
-                                  font=('Comic Sans MS', 13, 'normal'),
-                                  background="Black", foreground="Yellow",
-                                  activebackground="Orange")
+        self.home_button = Button(self, image=self.image_quit, command=self.main,
+                                  background="orange", activebackground="white")
+        self.home_button.image = self.image_quit
         self.home_button.pack(side=TOP)
 
     def calculate_results(self):

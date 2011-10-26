@@ -7,6 +7,7 @@ import student
 
 
 class StartUpScreen(Frame):
+    """ Defines the interface and the methods of the start up screen. """
 
     def __init__(self, master):
         Frame.__init__(self, master, background="skyblue", width=1000)
@@ -15,6 +16,7 @@ class StartUpScreen(Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """ Creates widgets and packs them. """
         label_title = Label(self, image=self.image_title, background="skyblue")
         label_title.image = self.image_title
         label_title.grid(row=0, column=0, columnspan=2,padx=10)
@@ -30,21 +32,19 @@ class StartUpScreen(Frame):
         self.register.grid(row=1, column=1, padx=20, pady=20)
 
     def initialise_pics(self):
+        """ Initialises the pics to use on the buttons and as the header. """
         self.image_title = PhotoImage(file="pics/SpellingBee_Black.gif")
         self.image_register = PhotoImage(file="pics/register.gif")
         self.image_login = PhotoImage(file="pics/login.gif")
-
-    def teacher_interface(self):
-        self.destroy()   
-        view = ListEditorView(master=self.master)
-        controller = ListEditorController(view)
       
     def open_login_screen(self):
+        """ Method called when the login button is pressed. """
         self.destroy()
         login = LoginScreen(master=self.master)
         login.pack()
 
     def open_register_screen(self):
+        """ Method called when the register button is pressed. """
         self.destroy()
         register = RegistrationScreen(master=self.master)
         register.pack()

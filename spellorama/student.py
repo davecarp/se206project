@@ -9,6 +9,7 @@ import os
 import tkMessageBox
 
 class StudentInterface(Frame):
+    """ Defines the interface and methods of the main student interface. """
 
     def __init__(self, master, student):
         self.master = master
@@ -18,6 +19,7 @@ class StudentInterface(Frame):
         self.create_widgets()
     
     def initialise_pics(self):
+        """ Initialises the images used on the buttons in the interface. """
         self.image_title = PhotoImage(file="pics/welcome_header.gif")
         self.image_highscores = PhotoImage(file="pics/viewhighscores.gif")
         self.image_game = PhotoImage(file="pics/playthegame.gif")
@@ -27,7 +29,7 @@ class StudentInterface(Frame):
                                   self.image_practice.height(), self.image_logout.height()])
 
     def create_widgets(self):
-
+        """ Creates the widgets and places them. """
         label_title = Label(self, image=self.image_title, background="skyblue")
         label_title.image = self.image_title
         label_title.grid(row=0, column=0, columnspan=3,padx=10)
@@ -66,21 +68,25 @@ class StudentInterface(Frame):
         self.logout_button.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
 
     def logout(self):
+        """ Method called when the logout button is pressed. """
         self.destroy()
         p = project.StartUpScreen(master = self.master)
         p.pack()
 
     def practice(self):
+        """ Method called when the practice button is pressed. """
         self.destroy()
         p = Practice(master=self.master, student=self.student)
         p.pack()
 
     def play_game(self):
+        """ Method called when the play game button is pressed. """
         self.destroy()
         pg = PlayGame(master=self.master, student=self.student)
         pg.pack()
 
     def high_scores(self):
+        """ Method called when the high scores button is pressed. """
         self.destroy()
         hs = HighScores(master=self.master, student=self.student)
         hs.pack()
@@ -92,13 +98,21 @@ class PlayGame(Frame):
         self.student = student
         Frame.__init__(self, self.master, background="skyblue")
         self.avail = database.get_available_lists(self.student[0])
+        self.avail_names = []
+        for l in self.avail:
+            self.avail_names.append(l[1].split('/')[-1].split('.')[0])
         self.initialise_pics()
         self.create_widgets()
+        if len(self.avail) == 0:
+            self.l['text'] = "It appears that your teacher hasn't\nmade any lists available"+ \
+                             "to you. Come\nback later and check again."
+                            
 
     def initialise_pics(self):
         self.image_title = PhotoImage(file="pics/selectalist_header.gif")
         self.image_cancel = PhotoImage(file="pics/cancel.gif")
         self.image_start = PhotoImage(file="pics/start.gif")
+
     def create_widgets(self):
         label_title = Label(self, image=self.image_title, background="skyblue")
         label_title.image = self.image_title
@@ -119,16 +133,17 @@ class PlayGame(Frame):
                                    background="orange", activebackground="white")
         self.start_button.image = self.image_start
         self.start_button.grid(row=3, column=1, padx=5, pady=5)
-        for l in self.avail:
-            self.lister.listbox.insert(END, l[1])
+        for l in self.avail_names:
+            self.lister.listbox.insert(END, l)
         self.start_button['state'] = "disabled"
         self.lister.listbox.bind("<ButtonRelease-1>", self.list_selected)
         self.lister.listbox['font'] = font=('Comic Sans MS', 14, 'normal')
         self.index = None
 
     def list_selected(self, event):
-        self.start_button['state'] = "active"
-        self.index = int(self.lister.listbox.curselection()[0])
+        if len(self.avail) != 0:
+            self.start_button['state'] = "active"
+            self.index = int(self.lister.listbox.curselection()[0])
         
     def cancel(self):
         self.destroy()
@@ -263,11 +278,11 @@ class HighScores(Frame):
                                                                   self.by_words_correct[1][6])
         self.correct_words_third['text'] = "3rd: %s %d Words" % (self.by_words_correct[2][1],
                                                                  self.by_words_correct[2][6])
-        self.percent_correct_first['text'] = "1st: %s %f%%" % (self.by_percent_correct[0][1],
+        self.percent_correct_first['text'] = "1st: %s %.3f%%" % (self.by_percent_correct[0][1],
                                                                self.by_percent_correct[0][8])
-        self.percent_correct_second['text'] = "2nd: %s %f%%" % (self.by_percent_correct[1][1],
+        self.percent_correct_second['text'] = "2nd: %s %.3f%%" % (self.by_percent_correct[1][1],
                                                                 self.by_percent_correct[1][8])
-        self.percent_correct_third['text'] = "3rd: %s %f%%" % (self.by_percent_correct[2][1],
+        self.percent_correct_third['text'] = "3rd: %s %.3f%%" % (self.by_percent_correct[2][1],
                                                                self.by_percent_correct[2][8])
         self.rank_most_words['text'] = str(self.student_ratings[0])
         self.rank_correct_words['text'] = str(self.student_ratings[1])
